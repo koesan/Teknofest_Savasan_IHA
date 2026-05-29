@@ -1,4 +1,4 @@
-# 🚀 TEKNOFEST Savaşan İHA — Otonom Kamikaze & Takip Sistemi
+# TEKNOFEST Savaşan İHA — Otonom kilitlenme & Kamikaze 
 
 Bu proje, **TEKNOFEST Savaşan İHA Yarışması** için geliştirilmiş otonom kamikaze görevi ve otonom takip/kilitlenme görevlerinin yazılım altyapısını içermektedir.
 
@@ -53,9 +53,11 @@ graph TD
 Projede kullanılan dalış başlangıç mesafesi hesabı, İHA'nın anlık yüksekliği ve süzülüş yeteneğine göre **dinamik** olarak yapılır. 
 
 Dalış başlangıç mesafesi aşağıdaki formülle hesaplanmaktadır:
-$\text{Dalış Mesafesi} = \text{target\_offset} + \frac{\text{Aktif İrtifa} - \text{recovery\_alt}}{\tan(\theta_{\text{dalış}})} + \text{trigger\_margin} + \text{trigger\_extra}$
+
+$$\text{Dalış Mesafesi} = \text{target}_{\text{offset}} + \frac{\text{Aktif İrtifa} - \text{recovery}_{\text{alt}}}{\tan(\theta_{\text{dalış}})} + \text{trigger}_{\text{margin}} + \text{trigger}_{\text{extra}}$$
 
 > [!IMPORTANT]
+> Burada `Aktif İrtifa`, anlık uçuş irtifasını ifade eder. Hesaplanan dalış mesafesi; hedef ofseti, kurtarma irtifası, dalış açısı ve tetikleme marjları dikkate alınarak belirlenir.
 > **Dalış Açısı Sınırlandırması (18 Derece):**
 > Gazebo simülasyonlarında yapılan standart VTOL modeli testlerinde, hava aracının aerodinamik yapısının kararlı bir şekilde en fazla **18 derecelik** bir süzülüş açısıyla dalış yapabildiği tespit edilmiştir. Bu sebeple konfigürasyondaki `effective_dive_angle_deg` parametresi **18.0** olarak ayarlanmıştır. Kendi İHA'nızın aerodinamik yapısına göre bu parametreyi (örn. 30 dereceye kadar) konfigürasyon dosyasından değiştirebilirsiniz. Sistem, girdiğiniz açıya ve anlık yüksekliğe göre en uygun dalış başlangıç mesafesini otomatik hesaplayacaktır.
 
