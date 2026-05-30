@@ -131,7 +131,9 @@ Görüntü düzleminde anlık tespit kayıplarını sönümlemek ve gürültül�
 #### 3. Görsel Servo (Visual Servoing) ve PID Kontrol Mimarisi
 Görüntü düzlemindeki piksel sapmalarını hava aracının fiziksel yönelim ve irtifa komutlarına çeviren bir görsel servo algoritması çalışır:
 *   **Açısal Projeksiyon:** Merkez piksel hataları ($e\_x, e\_y$), kameranın yatay ($FOV\_h = 110^{\circ}$) ve dikey ($FOV\_v = 75^{\circ}$) görüş açıları kullanılarak gerçek derece cinsinden açı hatalarına ($\theta\_{\text{yaw}}, \theta\_{\text{pitch}}$) projekte edilir:
+*   
     $$\theta\_{\text{yaw}} = \frac{c\_x - c\_{x,\text{mid}}}{c\_{x,\text{mid}}} \times \frac{FOV\_h}{2}$$
+    
 *   **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($w\_r = w / \text{frame\_width}$) kullanılarak av aracına olan yaklaşık geometrik mesafe ($d\_{est}$) hesaplanır. Ardından dikey pitch açı hatasıyla trigonometrik olarak irtifa farkı ($h\_{err}$) elde edilir:
     $$h\_{err} = d\_{est} \times \sin(\theta\_{\text{pitch}})$$
 *   **Çift PID Döngüsü:** 
