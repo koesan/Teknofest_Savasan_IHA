@@ -20,7 +20,7 @@ Bu proje, **TEKNOFEST Savaşan İHA Yarışması** kapsamındaki otonom takip/ki
 Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Landing - QuadPlane)** tipi İHA modeli (`standard_vtol`) kullanılmıştır. Ancak projenin ana kodları **farklı tipteki İHA'lar** (sabit kanat, döner kanat vb.) ile çalışabilecek mimariye sahiptir. Kendi kullanacağınız İHA modeline uygun olarak `config.yaml` ve `default.yaml` dosyalarındaki parametreleri düzenleyip, gerekirse araç kontrol kodlarını da kendi aracınızın fiziksel uçuş dinamiklerine göre güncelleyerek sistemi kendi platformunuzda kullanabilirsiniz.
 
 > [!NOTE]
-> **📂 Medya Arşivi:** Uçuş testlerine ait orijinal yüksek çözünürlüklü video kayıtları, proje içerisindeki `./assets/` klasöründe yer almaktadır.
+> **📂 Uçuş testlerine ait video kayıtları ve görseller, Görevler içerisindeki `assets` klasörlerinde yer almaktadır.** 
 
 ---
 
