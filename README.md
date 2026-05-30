@@ -8,6 +8,13 @@ Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Land
 
 ## ⚔️ Savaşan İHA Görevi: Otonom Takip ve Kilitlenme
 
+<h2>🎥 Demo Video</h2>
+
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/05d4527f-3d3c-40fb-8e78-58eaf5a41bcb" controls width="800"></video>
+</p>
+
+
 Savaşan İHA görevi; avcı İHA'nın havada serbestçe devriye gezen av İHA'yı (prey) tamamen otonom olarak arayıp bulmasını, ona güvenli mesafeden yaklaşarak arkasına yerleşmesini (mesafe koruması) ve yarışma şartnamesinde belirtilen 5 kritik kuralı kesintisiz 4.0 saniye boyunca sağlayarak otonom kilitlenme gerçekleştirmesini kapsar.
 
 ### 📋 Şartname Kuralları & Kilitlenme Kriterleri
@@ -107,6 +114,14 @@ Avcı İHA'nın avı arkadan takip ederken aşırı hızlanıp onu geçmesini (f
 ---
 
 ## 🎯 Kamikaze İHA Görevi ve Şartname Gereksinimleri
+
+
+<h2>🎥 Demo Video</h2>
+
+<p align="center">
+  <video src="https://github.com/user-attachments/assets/0b897603-f90d-4f7a-a46d-a202249760b8" controls width="800"></video>
+</p>
+
 
 Yarışma şartnamesine göre Kamikaze İHA görevi; yer düzleminde sabit bir konumda bulunan **2m x 2m** boyutlarındaki bir QR kod hedefinin İHA üzerindeki kamera ile otonom olarak tespit edilmesini, okunmasını ve ardından İHA'nın güvenli bir şekilde pas geçerek (tırmanışa geçerek) uçuşuna devam etmesini kapsar.
 
