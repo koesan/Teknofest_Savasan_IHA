@@ -36,9 +36,9 @@ Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Land
 
 <p align="center">
   📂 <b>Savaşan İHA Uçuş Kayıtları (Yerel Bağlantılar):</b><br>
-  🎥 <a href="./assets/savaşan_iha.mp4">Özet/Kesilmiş Video</a> | 
-  🎬 <a href="./assets/savaşan_iha_tam.mp4">Tam/Kesilmemiş Orijinal Video</a> | 
-  ⚡ <a href="./assets/savaşan_iha_hızlı.mp4">Hızlandırılmış Test Videosu</a>
+  🎥 <a href="Savaşan_İHA_Görevi/assets/savaşan_iha.mp4">Özet/Kesilmiş Video</a> | 
+  🎬 <a href="Savaşan_İHA_Görevi/assets/savaşan_iha_tam.mp4">Tam/Kesilmemiş Orijinal Video</a> | 
+  ⚡ <a href="Savaşan_İHA_Görevi/assets/savaşan_iha_hızlı.mp4">Hızlandırılmış Test Videosu</a>
 </p>
 
 <br>
