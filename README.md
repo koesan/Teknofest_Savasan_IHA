@@ -87,7 +87,7 @@ graph TD
     INTERCEPT -- "Tüm Kilitlenme Kriterleri OK" --> LOCK_HOLD[5. KİLİT BAŞLADI]
     LOCK_HOLD -- "4.0 Saniye Kesintisiz Tamamlandı" --> LOCK_SUCCESS[6. KİLİT BAŞARILI]
     INTERCEPT -- "Hedef Kayıp" --> REACQUIRE[7. YENİDEN YAKALAMA]
-    LOCK_HOLD -- "Hedef Kayıp > 1.20sn" --> REACQUIRE
+    LOCK_HOLD -- "Hedef Kayıp > 1.0sn" --> REACQUIRE
     REACQUIRE -- "Hedef Bulundu" --> INTERCEPT
     REACQUIRE -- "Zaman Aşımı (6.0sn)" --> SEARCH
 ```
