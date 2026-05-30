@@ -138,7 +138,7 @@ Görüntü düzlemindeki piksel sapmalarını hava aracının fiziksel yönelim 
 
     $$\theta_{\text{pitch}} = \frac{c_y - c_{y,\text{mid}}}{c_{y,\text{mid}}} \times \frac{FOV_v}{2}$$
 
-* **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($w_r = w / \text{frame\_width}$) kullanılarak av aracına olan yaklaşık geometrik mesafe ($d_{\text{est}}$) hesaplanır. Ardından dikey pitch açı hatasıyla trigonometrik olarak irtifa farkı ($h_{\text{err}}$) elde edilir:
+* **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($$w_r = \frac{w}{\text{frame width}}$$) kullanılarak av aracına olan yaklaşık geometrik mesafe ($d_{\text{est}}$) hesaplanır. Ardından dikey pitch açı hatasıyla trigonometrik olarak irtifa farkı ($h_{\text{err}}$) elde edilir:
 
     $$h_{\text{err}} = d_{\text{est}} \times \sin(\theta_{\text{pitch}})$$
 
