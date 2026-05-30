@@ -15,12 +15,12 @@
 
 ## Proje Hakkında
 
-Bu proje, **TEKNOFEST Savaşan İHA Yarışması** için geliştirilmiş otonom takip/kilitlenme görevi ve otonom kamikaze görevi yazılım altyapılarını içermektedir.
+Bu proje, **TEKNOFEST Savaşan İHA Yarışması** kapsamındaki otonom takip/kilitlenme ve otonom kamikaze görevlerinin yazılım altyapısını içerir.
 
-Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Landing - QuadPlane)** tipi İHA modeli (`standard_vtol`) kullanılmıştır. Ancak projenin ana kodları tamamen modüler ve esnek bir yapıda geliştirilmiş olup, **farklı tipteki İHA'lar** (sabit kanat, döner kanat vb.) ile çalışabilecek mimariye sahiptir. Kendi kullanacağınız İHA modeline uygun olarak `config.yaml` ve `default.yaml` dosyalarındaki parametreleri düzenleyip, gerekirse araç kontrol kodlarını da kendi aracınızın fiziksel uçuş dinamiklerine göre güncelleyerek sistemi kendi platformunuzda kullanabilirsiniz.
+Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Landing - QuadPlane)** tipi İHA modeli (`standard_vtol`) kullanılmıştır. Ancak projenin ana kodları **farklı tipteki İHA'lar** (sabit kanat, döner kanat vb.) ile çalışabilecek mimariye sahiptir. Kendi kullanacağınız İHA modeline uygun olarak `config.yaml` ve `default.yaml` dosyalarındaki parametreleri düzenleyip, gerekirse araç kontrol kodlarını da kendi aracınızın fiziksel uçuş dinamiklerine göre güncelleyerek sistemi kendi platformunuzda kullanabilirsiniz.
 
 > [!NOTE]
-> **📂 Medya Dosyaları Hakkında:** Görevler esnasında kaydedilmiş yüksek çözünürlüklü tüm orijinal görsel ve video kayıtları, proje klasörleri içerisindeki `assets` klasörü altında (`./assets/`) yer almaktadır; detaylı inceleme için bu dosyaları doğrudan oynatabilirsiniz.
+> **📂 Medya Arşivi:** Uçuş testlerine ait orijinal yüksek çözünürlüklü video kayıtları, proje içerisindeki `./assets/` klasöründe yer almaktadır.
 
 ---
 
@@ -41,35 +41,32 @@ Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Land
   ⚡ <a href="./assets/savaşan_iha_hızlı.mp4">Hızlandırılmış Test Videosu</a>
 </p>
 
-Savaşan İHA görevi; avcı İHA'nın havada serbestçe devriye gezen av İHA'yı (prey) tamamen otonom olarak arayıp bulmasını, ona güvenli mesafeden yaklaşarak arkasına yerleşmesini (mesafe koruması) ve yarışma şartnamesinde belirtilen 5 kritik kuralı kesintisiz 4.0 saniye boyunca sağlayarak otonom kilitlenme gerçekleştirmesini kapsar.
+Savaşan İHA görevi; avcı aracın, havada devriye gezen av İHA'yı (prey) otonom olarak arayıp bulmasını, arkasına güvenli mesafeyle yerleşmesini (takip) ve şartnamede belirtilen 5 kriteri kesintisiz **4.0 saniye** boyunca sağlayarak kilitlenmesini kapsar.
 
 ### 📋 Şartname Kuralları & Kilitlenme Kriterleri
 Yarışma kurallarına göre başarılı bir otonom kilitlenme için aşağıdaki 5 şartın aynı anda ve kesintisiz olarak **4.0 saniye** boyunca sağlanması gerekmektedir:
 
 > [!IMPORTANT]
-> **1. Boyut Şartı (min\_target\_size\_ratio: %5)**
-> Hedef İHA'nın genişliğinin veya yüksekliğinin, kamera ekranı (1280x720) boyutlarına oranı **en az %5 (`0.05`)** olmalıdır.
-> *   *Profil Telafisi ve Uçuş Güvenliği (`bbox_scale_factor: 0.80`):* 
->     Mevcut simülasyon ortamında (prototip test altyapısında), avcı ve av İHA'lar aynı irtifada uçmaktadır. Bu durum, avcı İHA'nın av İHA'yı doğrudan arkasından/karşısından (aynı düzlemde - coplanar) takip etmesine neden olur. Bu dar yanal/arkadan kesit açısı nedeniyle hedef İHA'nın kamera ekranındaki piksel genişliği yapay olarak son derece küçük çıkmaktadır. Bbox büyütme parametresi eklenmediğinde, %5 boyut sınırının ham YOLO kutusu tarafından sağlanabilmesi için avcı İHA'nın av İHA'ya **2-3 metre kadar tehlikeli bir mesafeye** yaklaşması gerekmiştir. Bu aşırı yakınlık ciddi bir çarpışma riski doğurmaktadır. Bu nedenle, uçuş güvenliğini korumak ve güvenli bir kilitlenme mesafesi oluşturmak amacıyla `bbox_scale_factor: 0.80` (%80 sanal büyütme) parametresi entegre edilmiştir.
-> *   *Yanal Kesit vs. Üstten Bakış Farkı:* 
->     Gerçek yarışma alanında ve nihai operasyonel sistemde, avcı İHA'nın av İHA'ya **üst irtifalardan** (daha yüksek bir süzülüş/görüş hattıyla) yaklaşması planlanmaktadır. Bu sayede av İHA'nın geniş kanat ve gövde yüzeyi (üstten bakış profili) tam olarak kameranın görüş açısına gireceğinden, profil daralması problemi kendiliğinden ortadan kalkacak ve ham YOLO kutuları dahi boyut şartını güvenli mesafelerde kolayca sağlayabilecektir. Dolayısıyla bu yapay kilitlenme genişletme faktörü (`bbox_scale_factor`), tamamen coplanar (aynı yatay düzlemdeki) prototip uçuş testlerinde çarpışma risklerini sıfıra indirmek ve görevi kararlı bir şekilde doğrulamak için eklenmiştir.
+> **1. Boyut Şartı (`min_target_size_ratio`: %5)**
+> Hedef İHA'nın genişlik/yükseklik değerinin kamera ekranına (1280x720) oranı **en az %5 (`0.05`)** olmalıdır.
+> *   *Profil Telafisi & Güvenlik (`bbox_scale_factor: 0.80`):* Simülasyon testlerinde iki İHA aynı irtifada uçtuğu için avcı İHA avı tam arkadan (ince yanal kesit) görür. Bbox büyütülmediğinde %5 sınırının aşılması için avcı İHA'nın ava **2-3 metre kadar tehlikeli düzeyde** yaklaşması gerekir. Çarpışma ve kaybetme riskini engellemek için kutuyu sanal olarak %80 büyüten `bbox_scale_factor` eklenmiştir.
+> *   *Yanal Kesit vs. Üstten Bakış Farkı:* Gerçek yarışmada avcı İHA ava **üst irtifadan** yaklaşacağından geniş kanat yüzey alanı kamerada tam görünür; bu dar profil sorunu yaşanmaz ve ham YOLO kutusuyla dahi kilitlenme güvenli mesafede sağlanır.
 
 > [!NOTE]
-> **2. Konum Şartı (Hedef Vuruş Alanı - `in\_target\_area`)**
-> Hedef İHA'nın merkez noktası (`tcx, tcy`), ekranın ortasındaki **Hedef Vuruş Alanı** içinde bulunmalıdır. Bu alan ekranın kenarlarından kırpılarak oluşturulur (sağdan/soldan %25, alttan/üstten %10 boşluk: `target_area_margin_x: 0.25`, `target_area_margin_y: 0.10`). Yani hedef ekranın çok kenarlarındayken kilitlenme sayılmaz, merkezde olmalıdır.
+> **2. Konum Şartı (Hedef Vuruş Alanı - `in_target_area`)**
+> Hedef merkez noktası (`tcx, tcy`), ekran merkezindeki vuruş alanı sınırlarında olmalıdır (sağdan/soldan %25, alttan/üstten %10 pay: `target_area_margin_x: 0.25`, `target_area_margin_y: 0.10`).
 
 > [!TIP]
-> **3. Kilitlenme Alanı Şartı (Lock Zone - `in\_lock\_zone`)**
-> Algoritmanın ürettiği kilitlenme dörtgeninin (kırmızı kutu) merkez koordinatı da yine yukarıda tanımlanan **Hedef Vuruş Alanı** sınırları içerisinde yer almalıdır.
+> **3. Kilitlenme Alanı Şartı (Lock Zone - `in_lock_zone`)**
+> Algoritmanın ürettiği kilitlenme dörtgeninin (kırmızı kutu) merkez koordinatı da Hedef Vuruş Alanı içerisinde yer almalıdır.
 
 > [!WARNING]
-> **4. Kapsama Oranı Şartı (Coverage Ratio - `coverage\_ok`)**
-> Algoritmanın ürettiği kilitlenme dörtgeni (AH), YOLO'nun tespit ettiği gerçek hedef kutusunun (H) **en az %90'ını** kapsamalıdır (`min_coverage_ratio: 0.90`). Kilit kutusu hedefi ıskalamamalı veya çok dışında kalmamalıdır.
+> **4. Kapsama Oranı Şartı (Coverage Ratio - `coverage_ok`)**
+> Kilitlenme dörtgeni, YOLO'nun tespit ettiği gerçek hedef kutusunun **en az %90'ını** kapsamalıdır (`min_coverage_ratio: 0.90`).
 
 > [!CAUTION]
-> **5. Merkez Kayma Toleransı (Center Offset - `center\_offset\_ok`)**
-> Hedef kutusunun gerçek merkezi ile kilitlenme dörtgeninin merkezi arasındaki piksel farkı (sapma), hedefin kendi boyutunun (genişlik/yükseklik) **en fazla yarısı (%50'si)** kadar olabilir (`max_center_offset_ratio: 0.5`). 
-> *   *Esnek Tolerans:* Yapılan son güncelleme ile bu tolerans sınırı da `bbox_scale_factor` parametresine bağlı olarak yapay olarak daha esnek hale getirilmiştir, böylece ufak merkez kaymalarında kilitlenme hemen kopmaz.
+> **5. Merkez Kayma Toleransı (Center Offset - `center_offset_ok`)**
+> Hedef kutusu merkezi ile kilitlenme dörtgeni merkezi arasındaki kayma sapması, hedefin kendi boyutunun **en fazla %50'si** kadar olabilir.
 
 ---
 
@@ -93,15 +90,14 @@ graph TD
     REACQUIRE -- "Zaman Aşımı (6.0sn)" --> SEARCH
 ```
 
-#### Durumların Detaylı Uçuş Algoritması:
-1.  **TAKEOFF (Dikey Kalkış):** Avcı İHA, dikey motorlarını (VTOL) çalıştırarak kalkış yapar ve konfigüre edilen kalkış yüksekliğine (`takeoff_altitude_m` - Varsayılan: 100m) dikey olarak tırmanır.
-2.  **TRANSITION (Seyir Moduna Geçiş):** Düz uçuş motorları devreye girer, dikey motorlar kapatılır ve İHA sabit kanat uçuş moduna geçer.
-3.  **CIRCLE\_SEARCH (Dairesel Arama):** İHA, arama bölgesinin merkez koordinatları etrafında dairesel devriye uçuşuna (`GUIDED` loiter) başlar ve kamera görüntüsünden YOLO ile hedef araması gerçekleştirir.
-4.  **INTERCEPT (Hedefe Yönelme & Takip):** Hedef tespit edildiği anda avcı İHA aktif takip moduna geçer. PID tabanlı servo yönlendirmesiyle burnunu hedefe çevirir ve hız PID kontrolcüsüyle av ile arasındaki mesafeyi kapatmaya başlar.
-5.  **LOCK\_HOLD (Kilitlenme Süreci):** Tüm 5 kilitlenme kriteri sağlandığında 4.0 saniyelik sayaç başlar.
-    *   *Kayıp Toleransı (Hold Grace Time - 1.20sn):* İHA manevra yaparken veya görüntü anlık olarak titrediğinde kilitlenmenin sıfırlanmasını önlemek amacıyla **1.20 saniyelik** esnek tolerans süresi uygulanır.
-6.  **LOCK\_SUCCESS (Kilitlenme Başarılı):** 4.0 saniye kesintisiz takip başarıyla tamamlandığında sunucuya kilitlenme paketi gönderilir ve ekranda yeşil panel ile **"GOREV BASARILI"** uyarısı verilir.
-7.  **REACQUIRE (Yeniden Yakalama):** Hedef anlık olarak kaybedilirse (örneğin 1.20 saniyeden uzun süren kayıplarda) İHA son bilinen konum, hız ve yön vektörünü EKF üzerinden kullanarak tahminî bir arama bölgesi (ROI) oluşturur ve kamerayı bu bölgeye odaklar. Hedef 6 saniye içinde tekrar bulunamazsa tekrar genel dairesel aramaya (`CIRCLE_SEARCH`) döner.
+#### Durumların Uçuş Algoritması:
+1. **TAKEOFF (Dikey Kalkış):** İHA, kalkış yüksekliğine (`takeoff_altitude_m` - 100m) dikey motorlarla tırmanır.
+2. **TRANSITION (Geçiş):** Sabit kanatlı uçuş motoru devreye girer ve düz seyir uçuşuna geçilir.
+3. **CIRCLE\_SEARCH (Arama):** Arama merkezinde dairesel devriye atılarak YOLO ile hedef taranır.
+4. **INTERCEPT (Yönelme & Takip):** Hedef bulunduğunda avcı burnunu hedefe çevirir ve PID hız kontrolüyle aradaki mesafeyi kapatır.
+5. **LOCK\_HOLD (Kilitlenme Süreci):** 5 şart sağlandığında 4s sayaç başlar. Manevra ve anlık titreşimler için **1.20 saniyelik** kayıp toleransı (`hold_grace_time`) uygulanır.
+6. **LOCK\_SUCCESS (Başarılı):** 4 saniye kesintisiz kilit tamamlandığında sunucuya veri gönderilir ve yeşil panelde **"GOREV BASARILI"** yazdırılır.
+7. **REACQUIRE (Yeniden Yakalama):** Hedef anlık kaybedilirse EKF hız tahminiyle son bilinen konuma odaklanılır. 6 saniye içinde hedef bulunamazsa tekrar Arama moduna dönülür.
 
 ---
 
@@ -109,48 +105,39 @@ graph TD
 
 ### 📐 Gelişmiş Algoritmik ve Kontrol Mimarisi
 
-Sistem, nesne tespiti, durum kestirimi ve uçuş mekaniği kontrolünü uçtan uca bağlayan çok katmanlı, gelişmiş bir algoritmik mimariye sahiptir:
+Sistem; nesne tespiti, durum kestirimi ve uçuş mekaniği kontrolünü birbirine bağlayan çok katmanlı bir mimariye sahiptir:
 
-#### 1. Real-Time Hedef Algılama (YOLOv11 Deep Learning Detector)
-*   **Derin Öğrenme Modeli:** Uçuş esnasında saniyede 20+ kare (FPS) işleme hızıyla hedef İHA'nın tespit edilmesi amacıyla **YOLOv11** (You Only Look Once) mimarisi entegre edilmiştir. 
-*   **Önemli Prototiplendirme Notu:** 
-    > [!WARNING]
-    > Proje kapsamında sunulan ağırlık dosyası (`yolo`) Gazebo simülasyon ortamında testler gerçekleştirmek amacıyla eğitilmiş **hafif bir prototip/test modelidir**. Gerçek yarışma alanında ve fiziksel uçuşlarda; farklı ışık açıları, arka plan gürültüleri (bulut, yeryüzü şekilleri) ve uzun mesafe tespiti için bu modelin güvenilirliği düşük kalabilir.
-    *   **Tavsiye:** Gerçek dünya uygulamalarında en az **YOLOv11s** veya **YOLOv11m** mimarisi kullanılarak, gerçek savaşan İHA görüntülerinden (farklı açılar, irtifalar ve hava koşulları altında) oluşturulmuş kapsamlı ve özgün bir veri kümesiyle (Custom Dataset) eğitilmiş daha gelişmiş bir modelin kullanılması şiddetle tavsiye edilir.
+#### 1. YOLOv11 ile Gerçek Zamanlı Hedef Algılama
+* **Derin Öğrenme Modeli:** Görüntü işleme adımında yüksek kare hızlarında (20+ FPS) av tespiti gerçekleştirmek için **YOLOv11** kullanılmıştır.
+* > [!WARNING]
+  > **Önemli Not:** Projede paylaşılan YOLO ağırlık dosyası Gazebo simülasyonu için eğitilmiş hafif bir **prototiptir**. Gerçek dünya uçuşlarında daha yüksek doğruluk ve menzil için **YOLOv11s** veya **YOLOv11m** modellerinin özgün veri kümeleriyle eğitilmesi tavsiye edilir.
 
-#### 2. Tek Hedefli Extended Kalman Filter (EKF) Tracker (Durum Kestirimi)
-Görüntü düzleminde anlık tespit kayıplarını sönümlemek ve gürültülü YOLO kutularını filtrelemek amacıyla **Extended Kalman Filter (Genişletilmiş Kalman Filtresi)** tabanlı tek hedefli bir tracker mimarisi uygulanmıştır.
-*   **State (Durum) Vektörü:** Durum uzayı 6 boyuttan oluşmaktadır:
-    $$\mathbf{x} = \begin{bmatrix} x & y & u & v & w & h \end{bmatrix}^T$$
-    Burada $(x, y)$ hedef merkez koordinatlarını, $(u, v)$ piksel/saniye cinsinden hedef hız vektörünü, $(w, h)$ ise hedef kutusunun genişlik ve yüksekliğini temsil eder.
-*   **Dinamik Model:** Pozisyon durumları için sabit hızlı (Constant Velocity), boyutlar için ise sabit boyutlu (Constant Size) durum geçiş modeli uygulanır:
-    $$\mathbf{x}\_{k} = F \mathbf{x}\_{k-1} + \mathbf{w}\_k$$
-*   **Measurement (Ölçüm) Vektörü & Gating:** Ölçüm vektörü doğrudan YOLO'nun tespit ettiği $\mathbf{z} = [x, y, w, h]^T$ kutusudur. Hatalı ve gürültülü tespitlerin (yanlış alarmlar) Kalman filtresine dahil edilip sistemi bozmaması amacıyla **Mahalanobis Mesafe Eşiği (Gating - 200 piksel)** uygulanmıştır. Eşiğin dışındaki tespitler filtreye sokulmadan elenir.
-*   **Tahminî Takip (Coasting):** Kamera kadrajından hedefin anlık olarak çıktığı veya YOLO'nun tespiti kaçırdığı frame'lerde EKF kendi hız tahmini (`u, v`) ile hedef konumunu saniyede 25 kez güncellemeye devam eder (`COASTING` durumu). Böylece takip kesintiye uğramaz ve kilitlenme sayacı sıfırlanmaz.
+#### 2. Extended Kalman Filter (EKF) Tracker
+Görüntüdeki anlık kayıpları sönümlemek ve gürültülü YOLO çıktılarını filtrelemek amacıyla **Genişletilmiş Kalman Filtresi (EKF)** tabanlı tracker geliştirilmiştir.
+* **Durum Vektörü:** Durum uzayı 6 boyuttan oluşur:
+  $$\mathbf{x} = \begin{bmatrix} x & y & u & v & w & h \end{bmatrix}^T$$
+  Burada $(x, y)$ hedef merkezini, $(u, v)$ piksel hızını, $(w, h)$ ise hedef kutu boyutunu temsil eder.
+* **Dinamik Geçiş & Mahalanobis Gating:** Tahminler sabit hızlı dinamik modele dayanır:
+  $$\mathbf{x}\_{k} = F \mathbf{x}\_{k-1} + \mathbf{w}\_k$$
+  Hatalı tespitleri (gürültüleri) engellemek amacıyla **200 piksellik Mahalanobis Mesafe Eşiği (Gating)** uygulanır.
+* **Tahminî Takip (Coasting):** Hedef anlık olarak kadrajdan çıktığında EKF kendi hız tahminiyle saniyede 25 kez güncellenerek takibin ve kilitlenme sayacının sıfırlanmasını önler.
 
-#### 3. Görsel Servo (Visual Servoing) ve PID Kontrol Mimarisi
+#### 3. Görsel Servo (Visual Servoing) ve PID Kontrolü
+Kamera üzerindeki piksel sapmalarını hava aracının fiziksel yönelim ve tırmanma hız komutlarına dönüştürür:
+* **Açısal Projeksiyon:** Merkez piksel hataları ($e_x, e_y$), kamera FOV açıları ($FOV_h = 110^{\circ}, FOV_v = 75^{\circ}$) kullanılarak açı hatalarına ($\theta_{\text{yaw}}, \theta_{\text{pitch}}$) projekte edilir:
+  $$\theta_{\text{yaw}} = \frac{c_x - c_{x,\text{mid}}}{c_{x,\text{mid}}} \times \frac{FOV_h}{2}$$
+  $$\theta_{\text{pitch}} = \frac{c_y - c_{y,\text{mid}}}{c_{y,\text{mid}}} \times \frac{FOV_v}{2}$$
+* **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($$w_r = \frac{w}{\text{frame width}}$$) ile yaklaşık geometrik mesafe ($d_{\text{est}}$) kestirilir ve trigonometrik olarak irtifa farkı ($h_{\text{err}}$) hesaplanır:
+  $$h_{\text{err}} = d_{\text{est}} \times \sin(\theta_{\text{pitch}})$$
+* **Çift PID Döngüsü:**
+  * **Yatay Kontrol (`yaw`):** Açısal hata PID döngüsüne sokularak ArduPilot için pürüzsüz `yaw_rate` komutları üretilir.
+  * **Dikey Kontrol (`vz`):** İrtifa hatası $h_{\text{err}}$ dikey PID ile dikey hız (`vz` - m/s) komutuna dönüştürülür.
 
-Görüntü düzlemindeki piksel sapmalarını hava aracının fiziksel yönelim ve irtifa komutlarına çeviren bir görsel servo algoritması çalışır:
-
-* **Açısal Projeksiyon:** Merkez piksel hataları ($e_x, e_y$), kameranın yatay ($FOV_h = 110^{\circ}$) ve dikey ($FOV_v = 75^{\circ}$) görüş açıları kullanılarak gerçek derece cinsinden açı hatalarına ($\theta_{\text{yaw}}, \theta_{\text{pitch}}$) projekte edilir:
-    
-    $$\theta_{\text{yaw}} = \frac{c_x - c_{x,\text{mid}}}{c_{x,\text{mid}}} \times \frac{FOV_h}{2}$$
-
-    $$\theta_{\text{pitch}} = \frac{c_y - c_{y,\text{mid}}}{c_{y,\text{mid}}} \times \frac{FOV_v}{2}$$
-
-* **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($$w_r = \frac{w}{\text{frame width}}$$) kullanılarak av aracına olan yaklaşık geometrik mesafe ($d_{\text{est}}$) hesaplanır. Ardından dikey pitch açı hatasıyla trigonometrik olarak irtifa farkı ($h_{\text{err}}$) elde edilir:
-
-    $$h_{\text{err}} = d_{\text{est}} \times \sin(\theta_{\text{pitch}})$$
-
-* **Çift PID Döngüsü:** * **Yatay Kontrol:** Yatay açı hatası, agresif bir PID kontrolcüsüne (`yaw_kp: 5.5`, `yaw_kd: 6.0`) beslenerek saniyede en fazla $65^{\circ}$'ye kadar yatay açısal dönüş komutu (`yaw_rate`) üretir.
-    * **Dikey Kontrol:** Hesaplanan irtifa farkı ($h_{\text{err}}$), dikey PID döngüsüne (`alt_kp: 4.0`, `alt_kd: 2.0`) sokularak dikey tırmanış/alçalış hızını (`vz` - m/s) üretir.
-      
-#### 4. Logaritmik Mesafe Kontrolü ve Hız Profilleme
-Avcı İHA'nın avı arkadan takip ederken aşırı hızlanıp onu geçmesini (fly-past) önlemek amacıyla logaritmik mesafe kontrolü uygulanır:
-*   **Logaritmik Hata Kontrolü:** Mesafe hatası, hedef ve anlık genişlik oranlarının logaritmik farkı üzerinden hesaplanır:
-    $$e\_{dist} = \ln\left(\frac{w\_{desired}}{w\_{current}}\right)$$
-*   **Senkronize Hız Profilleme:** Takip esnasında mesafe PID'sinden gelen hız çıktısı, `bbox_scale_factor` ile büyütülmüş sanal genişlik oranına göre filtrelenerek 5 farklı aşamada (Çok Uzak ➔ Uzak ➔ Orta Mesafe ➔ Hedef Mesafe ➔ Çok Yakın) hız limitlerine (`commanded_speed`) tabi tutulur. Av kilitlenme mesafesine girdiğinde hız **6.0 - 8.0 m/s** av hızına (hatta aşırı yakınsa **5.0 m/s**'ye) sabitlenerek güvenli mesafe korunur.
-*   **İvme ve Açısal Sınırlandırıcılar (Slew Limiting):** Aracın aerodinamik yapısının bozulmasını veya autopilotun çökmesini engellemek için üretilen hız ve açısal komutlar saniye başına maksimum değişim oranlarıyla (`max_speed_delta`, `max_yaw_delta`) yumuşatılarak ArduPilot'a gönderilir.
+#### 4. Logaritmik Mesafe Kontrolü ve Hız Sınırlandırıcılar
+Aşırı yaklaşmayı ve avı geçip gitmeyi (fly-past) önlemek amacıyla logaritmik hız profilleyici çalışır:
+* **Logaritmik Hata:** Mesafe hatası, istenen ve mevcut genişlik oranlarının logaritmik farkından hesaplanır:
+  $$e\_{dist} = \ln\left(\frac{w\_{desired}}{w\_{current}}\right)$$
+* **Hız Profilleyici & Slew Limiting:** Mesafe azaldıkça hız güvenli limitlere (6.0 - 8.0 m/s) çekilir. Aerodinamik aşırı yükleri engellemek için ani hız ve dönüş değişimleri sınırlandırılır (`max_speed_delta`, `max_yaw_delta`).
 
 ---
 
@@ -170,13 +157,13 @@ Avcı İHA'nın avı arkadan takip ederken aşırı hızlanıp onu geçmesini (f
   ⚡ <a href="./assets/kamikaze_hızlı.mp4">Hızlandırılmış Test Videosu</a>
 </p>
 
-Yarışma şartnamesine göre Kamikaze İHA görevi; yer düzleminde sabit bir konumda bulunan **2m x 2m** boyutlarındaki bir QR kod hedefinin İHA üzerindeki kamera ile otonom olarak tespit edilmesini, okunmasını ve ardından İHA'nın güvenli bir şekilde pas geçerek (tırmanışa geçerek) uçuşuna devam etmesini kapsar.
+Kamikaze İHA görevi; yer düzlemindeki **2m x 2m** boyutundaki QR kod hedefinin dalış yapılarak kamerayla tespit edilmesi, okunması ve ardından güvenli irtifada pas geçilerek otonom uçuşa devam edilmesini kapsar.
 
 ### 📋 Şartname Kuralları & Görev Tanımı
-*   **Fiziki Çarpma Yasaktır:** İHA'nın hedef platforma fiziki olarak çarpması yasaktır. Amaç, dalış gerçekleştirip QR kodu kamerayla okumak ve güvenli bir irtifada pas geçmektir.
-*   **Dalış Başlangıç İrtifası:** Şartname gereğince dalışa başlama irtifası, kalkış pistine göreli olarak **en az 100 metre** olmalıdır.
-*   **Açılı Koruma Panelleri:** QR kodun düz uçuş (cruise) esnasında uzaktan ve düz karşıdan okunmasını engellemek amacıyla etrafı **3 metre yüksekliğinde ve 45 derece açılı** plakalarla çevrilmiştir. Bu nedenle İHA, yukarıdan belirli bir süzülüş açısıyla (glide slope) dalış yapmak zorundadır.
-*   **Hedef Vuruş Alanı (Target Hit Area):** Dalışın sonlandığı (QR kodun okunduğu veya dalıştan çıkıldığı) andan 1 saniye önce ve 1 saniye sonraki (toplam 2 saniyelik) zaman diliminde, kameradan alınan en az 1 karede QR kod sınırlarının tamamı ekranın ortasındaki hedef vuruş alanı sınırları içerisinde olmalı ve en az 1 karede QR kod başarıyla çözülmüş olmalıdır.
+* **Fiziki Çarpma Yasaktır:** QR kod okunmalı ancak platforma fiziki olarak çarpılmamalıdır.
+* **Dalış İrtifası:** Dalışa başlama yüksekliği pist referansına göre en az **100 metre** olmalıdır.
+* **Açılı Koruma Panelleri:** QR kodun etrafı 3m yüksekliğinde 45° açılı levhalarla çevrilidir. Bu nedenle İHA'nın üstten belli bir süzülüş açısıyla (glide slope) dalış yapması zorunludur.
+* **Hedef Vuruş Alanı:** Dalışın sonlandığı anın 1s öncesi ve 1s sonrasını kapsayan 2 saniyelik dilimde, QR kodun tamamı ekran merkezindeki hedef vuruş alanında bulunmalı ve başarıyla çözülmelidir.
 
 ---
 
@@ -198,17 +185,16 @@ graph TD
     PULLUP -- "Güvenli İrtifa (100m)" --> CRUISE
 ```
 
-#### Durumların Detaylı Analizi ve Uçuş Algoritması:
-
-1.  **TAKEOFF (Dikey Kalkış):** İHA, `GUIDED` modda dikey motorlarını (VTOL) çalıştırarak kalkış yapar ve konfigüre edilen kalkış yüksekliğine (`takeoff_altitude_m` - Varsayılan: 150m) dikey olarak tırmanır.
-2.  **TRANSITION (Seyir Moduna Geçiş):** Kalkış tamamlandıktan sonra uçuş kontrolörü, kalkış yapılan konumu (veya konfigürasyondaki hedef koordinatlarını) hedef olarak kaydeder ve süzülüş/dalış parametrelerini hesaplamak üzere `DiveGuidance` sistemini başlatır.
-3.  **CRUISE\_FORWARD (Seyir Uçuşu):** İHA belirlenen seyir irtifasında (`cruise_altitude_m` - Varsayılan: 150m) düz ileri uçuş gerçekleştirir. Operatör OpenCV arayüzündeki **"START KAMIKAZE"** butonuna tıklayana veya klavyeden **"K"** tuşuna basana kadar bu durumda bekler.
-4.  **TURN\_TO\_TARGET (Hedefe Yönelme):** Kamikaze görevi başlatıldığında İHA, `GUIDED` modda hedef koordinatına doğru keskin bir U dönüşü yapar. İHA'nın yönelimi (heading), hedef açısı toleransı (`heading_tolerance_deg`) içinde **1.5 saniye** boyunca kararlı kaldığında yönelim kilitlenir ve bir sonraki aşamaya geçilir.
-5.  **FW\_APPROACH (Sabit Kanat Yaklaşımı):** İHA dalış kapısına yaklaşırken erken irtifa kayıplarını önlemek amacıyla dalış sınırına (`fixed_wing_dive_arm_distance_m`) kadar `GUIDED` modda irtifasını korur. Bu sınırın altına girildiğinde sabit kanat uçuş moduna (`FBWA`) geçiş yapılır. Geçişten sonra aerodinamik kararlılık için kısa bir süre motor gücü ve kontrol yüzeyleri dengelenir.
-6.  **FW\_DIVE (Dalış Aşaması):** İHA, otomatik olarak hesaplanan tetikleme mesafesine ulaştığında burun aşağı dalışa (`FW_DIVE`) geçer.
-    *   **Glide Slope (Süzülüş Hattı) PI Kontrolcü:** Dalış esnasında İHA'nın ideal süzülüş hattından sapmasını engellemek için anlık irtifa hatası (`alt_error`) kullanılarak bir PI kontrolcü çalıştırılır. Kontrolcü, `pitch_pwm` sinyalini modüle ederek İHA'nın süzülüş açısını sabit tutar.
-    *   **Yanal Sapma Engelleme:** Dalış sırasında İHA'nın hedeften sağa-sola savrulmaması için roll kanalları sınırlandırılır (`dive_roll_limit_pwm`) ve İHA sadece küçük yön düzeltmeleriyle düz bir doğrultuda hedefe süzülür.
-7.  **PULLUP (Pas Geçme / Tırmanma):** QR kod başarıyla deşifre edildiğinde veya İHA emniyet limitine (`dive_recovery_altitude_m` - 25m / minimum 20m) ulaştığında dalış derhal durdurulur. İHA dikey motorlarını açarak (`transition_to_guided_vtol` ile) hızlıca tırmanışa geçer. `pullup_target_altitude_m` (100m) yüksekliğine ulaştığında tekrar emniyetli seyir uçuşuna (`CRUISE_FORWARD`) geri döner.
+#### Durumların Uçuş Algoritması:
+1. **TAKEOFF (Dikey Kalkış):** İHA dikey olarak `takeoff_altitude_m` (150m) irtifaya tırmanır.
+2. **TRANSITION (Geçiş):** Kalkış sonrası yatay uçuş motoru açılır ve dalış planlayıcı (`DiveGuidance`) başlatılır.
+3. **CRUISE\_FORWARD (Seyir):** Operatör OpenCV arayüzünden dalış komutu verene (veya "K" tuşuna basana) kadar İHA belirlenen irtifada düz seyirde bekler.
+4. **TURN\_TO\_TARGET (Yönelme):** Dalış tetiklendiğinde İHA hedef koordinata doğru U dönüşü yapar. Yönelim 1.5s boyunca kararlı kaldığında rota kilitlenir.
+5. **FW\_APPROACH (Sabit Kanat Yaklaşımı):** İHA dalış kapısına kadar `GUIDED` modda irtifasını korur. Kapıdan geçince `FBWA` uçuş moduna geçerek motor ve kanat kararlılığı sağlar.
+6. **FW\_DIVE (Dalış):** Burun aşağı 30° dalış gerçekleştirilir.
+   * **Glide Slope PI:** İdeal süzülüş hattından sapmaları önlemek amacıyla PI kontrolcü `pitch_pwm` değerini kontrol eder.
+   * **Yanal Sabitleme:** Rüzgardan savrulmayı önlemek için roll hareketleri sınırlandırılır (`dive_roll_limit_pwm`).
+7. **PULLUP (Pas Geçme):** QR kod okunduğunda veya acil durum limitine (`dive_recovery_altitude_m` - 25m) girildiğinde dalış anında kesilir. Dikey motorlar çalıştırılarak hızlıca tırmanışa geçilir ve seyir durumuna güvenle geri dönülür.
 
 ---
 
