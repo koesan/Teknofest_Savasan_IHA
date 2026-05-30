@@ -41,6 +41,8 @@ Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Land
   ⚡ <a href="./assets/savaşan_iha_hızlı.mp4">Hızlandırılmış Test Videosu</a>
 </p>
 
+<br>
+
 Savaşan İHA görevi; avcı aracın, havada devriye gezen av İHA'yı (prey) otonom olarak arayıp bulmasını, arkasına güvenli mesafeyle yerleşmesini (takip) ve şartnamede belirtilen 5 kriteri kesintisiz **4.0 saniye** boyunca sağlayarak kilitlenmesini kapsar.
 
 ### 📋 Şartname Kuralları & Kilitlenme Kriterleri
@@ -172,6 +174,8 @@ $$e\_{dist} = \ln\left(\frac{w\_{desired}}{w\_{current}}\right)$$
   🎬 <a href="./assets/kamikaze.mp4">Normal Hızlı / Yavaş Video</a> | 
   ⚡ <a href="./assets/kamikaze_hızlı.mp4">Hızlandırılmış Test Videosu</a>
 </p>
+
+<br>
 
 Kamikaze İHA görevi; yer düzlemindeki **2m x 2m** boyutundaki QR kod hedefinin dalış yapılarak kamerayla tespit edilmesi, okunması ve ardından güvenli irtifada pas geçilerek otonom uçuşa devam edilmesini kapsar.
 
