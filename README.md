@@ -188,21 +188,21 @@ Proje klasöründeki özel modelleri ve dünyayı Gazebo simülasyon ortamına (
 
 ```bash
 # Simülasyon modellerini kopyalayın
-cp -rf ./Kamikaze_İHA_Görevi/similasyon/kamikaze_qr_target ./catkin_ws/src/iq_sim/models/
-cp -rf ./Kamikaze_İHA_Görevi/similasyon/standard_vtol ./catkin_ws/src/iq_sim/models/
+cp -rf ./Teknofest_Savasan_IHA/Kamikaze_İHA_Görevi/similasyon/kamikaze_qr_target ./catkin_ws/src/iq_sim/models/
+cp -rf ./Teknofest_Savasan_IHA/Kamikaze_İHA_Görevi/similasyon/standard_vtol ./catkin_ws/src/iq_sim/models/
 
 # Dünyayı (World) kopyalayın (Varsa üzerine yazar)
-cp -f ./Kamikaze_İHA_Görevi/similasyon/multi_drone.world ./catkin_ws/src/iq_sim/worlds/
+cp -f ./Teknofest_Savasan_IHA/Kamikaze_İHA_Görevi/similasyon/multi_drone.world ./catkin_ws/src/iq_sim/worlds/
 ```
 
 #### B. Savaşan İHA Görevi Simülasyon Modelleri ve Dünyası
 ```bash
 # Simülasyon modellerini kopyalayın
-cp -rf ./Savaşan_İHA_Görevi/similasyon/standard_vtol_1 ./catkin_ws/src/iq_sim/models/
-cp -rf ./Savaşan_İHA_Görevi/similasyon/standard_vtol_2 ./catkin_ws/src/iq_sim/models/
+cp -rf ./Teknofest_Savasan_IHA/Savaşan_İHA_Görevi/similasyon/standard_vtol_1 ./catkin_ws/src/iq_sim/models/
+cp -rf ./Teknofest_Savasan_IHA/Savaşan_İHA_Görevi/similasyon/standard_vtol_2 ./catkin_ws/src/iq_sim/models/
 
 # Dünyayı (World) kopyalayın (Eğer multi_drone.world yoksa kopyalar)
-cp -n ./Savaşan_İHA_Görevi/similasyon/multi_drone.world ./catkin_ws/src/iq_sim/worlds/
+cp -n ./Teknofest_Savasan_IHA/Savaşan_İHA_Görevi/similasyon/multi_drone.world ./catkin_ws/src/iq_sim/worlds/
 ```
 
 ### 3. ArduPilot Yapılandırması ve Parametre Tanımlamaları
@@ -211,19 +211,19 @@ Gazebo QuadPlane modellerinin ArduPilot SITL tarafından tanınması için `vehi
 #### A. Kamikaze İHA Yapılandırması
 ```bash
 # Hazır parametre dosyasını default_params klasörüne kopyalayın
-cp ./Kamikaze_İHA_Görevi/similasyon/gazebo_quadplane.parm ./ardupilot/Tools/autotest/default_params/gazebo_quadplane.parm
+cp ./Teknofest_Savasan_IHA/Kamikaze_İHA_Görevi/similasyon/gazebo_quadplane.parm ./ardupilot/Tools/autotest/default_params/gazebo_quadplane.parm
 
 # vehicleinfo.py dosyasını güncelleyin (gazebo-quadplane profilini içerir)
-cp ./Kamikaze_İHA_Görevi/similasyon/vehicleinfo.py ./ardupilot/Tools/autotest/pysim/vehicleinfo.py
+cp ./Teknofest_Savasan_IHA/Kamikaze_İHA_Görevi/similasyon/vehicleinfo.py ./ardupilot/Tools/autotest/pysim/vehicleinfo.py
 ```
 
 #### B. Savaşan İHA Yapılandırması
 ```bash
 # Hazır parametre dosyasını default_params klasörüne kopyalayın
-cp ./Savaşan_İHA_Görevi/similasyon/gazebo_quadplane.parm ./ardupilot/Tools/autotest/default_params/gazebo_quadplane.parm
+cp ./Teknofest_Savasan_IHA/Savaşan_İHA_Görevi/similasyon/gazebo_quadplane.parm ./ardupilot/Tools/autotest/default_params/gazebo_quadplane.parm
 
 # vehicleinfo.py dosyasını güncelleyin (gazebo-quadplane profilini içerir)
-cp ./Savaşan_İHA_Görevi/similasyon/vehicleinfo.py ./ardupilot/Tools/autotest/pysim/vehicleinfo.py
+cp ./Teknofest_Savasan_IHA/Savaşan_İHA_Görevi/similasyon/vehicleinfo.py ./ardupilot/Tools/autotest/pysim/vehicleinfo.py
 ```
 
 > [!NOTE]
@@ -258,7 +258,7 @@ sim_vehicle.py -v ArduPlane -f gazebo-quadplane --no-mavproxy -I0
 
 #### 3. Terminal: Görev Kontrol Yazılımını Başlatma
 ```bash
-cd ./Teknofest_savaşan_iha/Kamikaze_İHA_Görevi/
+cd ./Teknofest_Savasan_IHA/Kamikaze_İHA_Görevi/
 python3 main.py
 ```
 
@@ -284,7 +284,7 @@ sim_vehicle.py -v ArduPlane -f gazebo-quadplane --no-mavproxy -I1
 
 #### 4. Terminal: Görev Kontrol Yazılımını Başlatma
 ```bash
-cd ./Teknofest_savaşan_iha/Savaşan_İHA_Görevi/
+cd ./Teknofest_Savasan_IHA/Savaşan_İHA_Görevi/
 python3 main.py
 ```
 
