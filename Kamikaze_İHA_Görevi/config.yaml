@@ -1,0 +1,107 @@
+vehicle:
+  connection: "tcp:127.0.0.1:5760"
+  connection_timeout: 60
+  arm_timeout: 60
+  airframe_profile: "generic_quadplane"
+  reboot_if_params_changed: false
+  disable_arming_checks: true
+  disable_compass: false
+  takeoff_altitude_m: 150.0
+  cruise_altitude_m: 150.0
+  cruise_speed_mps: 18.0
+  transition_wait_s: 8.0
+  fw_throttle_pwm: 1650
+  min_safe_altitude_m: 20.0
+  min_pullup_trigger_altitude_m: 22.0
+  default_forward_leg_m: 120.0
+  command_period_s: 0.25
+  fixed_wing_command_period_s: 0.9
+  fixed_wing_cruise_throttle_pwm: 1700
+  fixed_wing_min_cruise_speed_mps: 12.0
+  fixed_wing_attitude_period_s: 0.25
+  fixed_wing_roll_limit_pwm: 140
+  fixed_wing_pitch_limit_pwm: 120
+  fixed_wing_turn_gain: 0.75
+  fixed_wing_alt_gain_divisor: 8.0
+  fixed_wing_invert_pitch: true
+  fixed_wing_invert_roll: false
+  fixed_wing_cruise_roll_pwm: 1500
+  fixed_wing_cruise_pitch_pwm: 1500
+  fixed_wing_stabilize_after_transition_s: 1.0
+  takeoff_complete_ratio: 0.98
+
+mission:
+  use_takeoff_position_as_target: true
+  target_lat: null
+  target_lon: null
+  dive_angle_deg: 30.0
+  dive_start_min_altitude_m: 95.0
+  dive_recovery_altitude_m: 25.0
+  dive_pitch_bias_pwm: 55
+  dive_pitch_offset_pwm: 450
+  dive_min_pitch_pwm: 1050
+  dive_entry_pitch_floor_pwm: 1025
+  dive_throttle_pwm: 1100
+  dive_target_speed_mps: 16.0
+  dive_min_throttle_pwm: 1100
+  dive_max_throttle_pwm: 1250
+  dive_speed_gain_pwm: 18.0
+  dive_min_pitch_offset_pwm: 260
+  dive_max_pitch_offset_pwm: 470
+  glide_slope_pitch_gain_pwm: 4.0
+  dive_roll_limit_pwm: 80
+  dive_heading_gain: 1.2
+  passed_target_margin_m: 3.0
+  final_fw_arm_window_m: 30.0
+  pre_dive_altitude_boost_m: 0.0
+  effective_dive_angle_deg: 18.0
+  trigger_distance_margin_m: 8.0
+  dive_trigger_extra_distance_m: 10.0 # 1×tan(18∘)≈0.325m
+  qr_target_size_m: 2.0
+  qr_wall_height_m: 3.0
+  desired_trigger_distance_m: 300.0
+  approach_distance_m: 170.0
+  approach_step_m: 80.0
+  transition_lead_distance_m: 90.0
+  fixed_wing_dive_arm_distance_m: 160.0
+  extra_dive_margin_m: 0.0
+  pullup_target_altitude_m: 100.0
+  pullup_pitch_bias_pwm: -40
+  pullup_step_m: 40.0
+  dive_step_m: 20.0
+  dive_waypoint_speed_mps: 15.0
+  heading_tolerance_deg: 8.0
+  target_offset_m: 8.0
+  glide_slope_kp: 4.0
+  glide_slope_ki: 0.5
+  glide_slope_i_limit: 150.0
+  target_area_margin_ratio: 0.25
+  cruise_heading_capture_delay_s: 2.0
+  dive_entry_speed_mps: 15.0
+  fixed_wing_approach_lookahead_s: 3.0
+  overshoot_distance_delta_m: 4.0
+  overshoot_sample_limit: 3
+  approach_altitude_tolerance_m: 8.0
+  qr_worker_timeout_s: 1.0
+
+camera:
+  primary_topic: "/uav1/camera_front/image_raw"
+  fallback_topics:
+    - "/uav1/camera_front/image_raw"
+    - "/camera_front/image_raw"
+    - "/standard_vtol_1/camera_front/image_raw"
+    - "/standard_vtol/camera_front/image_raw"
+    - "/drone1/camera_front/image_raw"
+  frame_width: 1280
+  frame_height: 720
+  startup_timeout_s: 15.0
+
+gui:
+  enable: true
+  title: "VTOL KAMIKAZE MISSION"
+  capture_dir: "captures"
+
+logging:
+  log_path: "mission_log.txt"
+  level: "DEBUG"
+  console: true

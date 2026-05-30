@@ -1,0 +1,191 @@
+# ============================================================================
+# Savaşan İHA - Otonom Takip & Kilitlenme Sistemi
+# Ana Konfigürasyon Dosyası
+# ============================================================================
+
+# --- Kamera Ayarları ---
+camera:
+  frame_width: 1280
+  frame_height: 720
+  hunter_topic: "/uav2/camera_front/image_raw"
+  prey_topic: "/uav1/camera_front/image_raw"
+  horizontal_fov_deg: 110.0
+  vertical_fov_deg: 75.0
+
+# --- Dedektör Ayarları ---
+detector:
+  model_path: "models/model.pt"
+  confidence_threshold: 0.15
+  iou_threshold: 0.4
+  imgsz: 1280
+  roi_imgsz: 960
+  max_detections: 5
+  target_classes: [1]  # İHA sınıfı
+  # ROI re-detection
+  roi_width: 640
+  roi_height: 384
+  roi_expand_scale: 1.8
+
+# --- Tracker Ayarları (Single-Target EKF) ---
+tracker:
+  # EKF süreç gürültüsü - velocity düşürüldü (daha stabil tahmin)
+  process_noise_pos: 5.0      # 8 -> 5: daha stabil
+  process_noise_vel: 8.0      # 15 -> 8: velocity çok büyüyordu
+  process_noise_size: 2.0      # 3 -> 2
+  # EKF ölçüm gürültüsü 
+  measurement_noise_pos: 4.0
+  measurement_noise_size: 8.0
+  # Gating - genişletildi, hızlı hareket eden hedef için
+  gate_threshold: 200.0  # Mahalanobis mesafe eşiği (piksel)
+  # Geçiş eşikleri - çok toleranslı
+  min_hits_to_confirm: 2
+  max_coast_frames: 36       # stale bbox'i gereksiz uzun kovalamamak icin
+  max_coast_time: 1.3        # hizli reacquire icin kisa coast
+  # Minimum bbox boyutu (piksel)
+  min_bbox_size: 4
+
+# --- Kilitlenme Değerlendirme (Şartname) ---
+lock:
+  # Hedef vuruş alanı (frame oranı)
+  target_area_margin_x: 0.25   # şartname: solda/sagda %25 bosluk
+  target_area_margin_y: 0.10   # üst/alt boşluk oranı
+  # Kilitlenme dörtgeni padding (hedef bbox etrafında)
+  lock_rect_padding: 0.08      # hedefi saran, asiri buyumeyen kilit dortgeni
+  # Şartname kuralları
+  min_target_size_ratio: 0.05  # min %5 yatay veya dikey
+  min_coverage_ratio: 0.90     # en az %90 kapsama
+  max_center_offset_ratio: 0.5 # merkez sapma: hedef boyutunun yarısı
+  
+  # Bbox Genişletme Faktörü (Kesit Alanı Telafisi)
+  # AÇIKLAMA: İHA'lar aynı irtifada uçarken birbirini tam karşıdan/yandan görür.
+  # Bu dar bakış açısı yüzünden hedefin kamera görüntüsündeki kesit alanı (en-boy oranı)
+  # yapay olarak çok küçük çıkar ve avı aşırı yaklaşmadan (fly-past riskiyle) %5 boyut koşulunu sağlayamaz.
+  # Bu parametre, algılanan bbox boyutunu belirtilen oranda artırarak bu dar açıyı telafi eder.
+  # Örn: 0.20 verilirse algılanan 50x30'luk bbox %20 büyütülerek değerlendirilir.
+  # EĞER ŞARTNAMEDEKİ ORİJİNAL/KATI KURALLARI UYGULAMAK İSTERSENİZ BU PARAMETREYİ 0.0 YAPINIZ.
+  bbox_scale_factor: 0.80      # %25 yapay bbox büyüterek dar profil telafisi sağlar
+
+  # Zamanlama
+  required_lock_duration: 4.0  # 4 saniye kesintisiz
+  lock_window_duration: 5.0    # 5 saniyelik pencere
+  hold_grace_time: 1.20        # artırıldı: anlık kayıplarda kilitlenmenin sıfırlanmasını önleyen esnek tolerans süresi
+  # Çizim
+  lock_rect_color: [0, 0, 255]  # BGR #FF0000
+  lock_rect_thickness: 2        # max 3px
+
+# --- Kontrol Sistemi (Visual Servoing) ---
+control:
+  # Yaw (yatay) PID - agresif takip
+  yaw_kp: 5.5              # artırıldı: daha hızlı tepki
+  yaw_ki: 0.3
+  yaw_kd: 6.0              # düşürüldü: aşırı sönümlemeyi azalt
+  max_yaw_rate: 65.0       # artırıldı: daha geniş dönüş kapasitesi
+  yaw_deadband: 0.012      # daraltıldı: hassasiyet
+  yaw_integral_limit: 15.0
+  
+  # Altitude (dikey) PID - agresif
+  alt_kp: 4.0              # artırıldı
+  alt_ki: 0.2
+  alt_kd: 2.0              # artırıldı
+  max_vertical_speed: 5.0  # m/s
+  alt_deadband: 0.015      # daraltıldı
+  alt_integral_limit: 8.0
+  
+  # Forward/distance PID
+  fwd_kp: 3.5
+  fwd_ki: 0.15
+  fwd_kd: 0.8
+  max_forward_speed: 16.0  # m/s - fixed-wing yaklaşma için yükseltildi
+  max_reverse_speed: 4.0   # m/s
+  desired_width_ratio: 0.055  # hedef genişlik oranı - sabit kanat için güvenli mesafe
+  min_width_ratio: 0.015      # çok uzak genişlik oranı
+  max_width_ratio: 0.070      # çok yakın - erken yavaşlama eşiği
+  
+  # Lateral - agresif merkezleme
+  max_lateral_speed: 3.5    # m/s
+  lateral_gain: 2.5         # artırıldı
+  
+  # Feed-forward - artırıldı
+  lead_time: 0.30           # saniye, daha fazla öngörü ile hedef tahmini
+  
+  # Slew rate limits (per iteration) - hızlı tepki
+  max_yaw_delta: 28.0       # deg/s per cycle (artırıldı: hızlı yönelme)
+  max_speed_delta: 1.5      # m/s per cycle (artırıldı: hızlı ivme)
+  max_vz_delta: 0.8         # m/s per cycle
+  
+  # Gain scheduling
+  fine_error_threshold: 0.12    # bu değerin altında düşük gain
+  fine_gain_multiplier: 0.6
+  
+  # Command rate
+  command_period: 0.04      # 25Hz kontrol döngüsü
+
+# --- Görev Ayarları ---
+mission:
+  # İrtifa - güvenli uçuş için
+  hunter_altitude: 100.0       # tüm ihalar 100m yükseklikte olmalı
+  hunter_min_altitude: 100.0   # tüm ihalar 100m yükseklikte kalmalı
+  prey_altitude: 100.0         # tüm ihalar 100m yükseklikte olmalı
+  prey_min_altitude: 100.0     # tüm ihalar 100m yükseklikte kalmalı
+  max_hunter_altitude: 100.0
+  
+  # VTOL mod geçişi
+  vtol_transition_speed: 8.0   # bu hızın üstünde fixed-wing moduna geç
+  vtol_transition_alt: 25.0    # bu irtifanın üstünde forward flight
+  vtol_mc_motors_off: true     # forward flight'ta MC motorlarını kapat
+  
+  # Arama
+  search_pattern: "expanding_square"  # expanding_square, racetrack, lawnmower
+  search_start_leg: 20.0     # başlangıç bacak uzunluğu (m)
+  search_leg_increment: 15.0 # her turda artış (m)
+  search_speed: 12.0         # fixed-wing arama hızı (m/s)
+  search_yaw_scan_rate: 45.0 # derece/saniye yaw tarama
+  search_max_radius: 150.0   # max arama yarıçapı
+  search_yaw_scan_enabled: true  # yaw tarama aktif
+  
+  # Patrol (Av İHA) - sabit irtifa
+  prey_patrol_radius: 80.0
+  prey_patrol_step_deg: 5.0
+  prey_patrol_period: 12.0
+  prey_fw_throttle: 1450
+  hunter_fw_throttle: 1725
+  prey_transition_wait: 12.0
+  hunter_transition_wait: 10.0
+  prey_hold_altitude: true    # yüksekliği sabit tut
+  search_command_period: 2.0
+  search_wp_reached_radius: 18.0
+  pursuit_command_period: 0.06
+  pursuit_refresh_period: 2.5
+  pursuit_lookahead: 3.0
+  reacquire_command_period: 1.2
+  reacquire_turn_deg: 25.0
+  reacquire_lookahead: 2.5
+
+  # FSM geçiş süreleri - daha toleranslı ve agresif takip
+  detection_confirm_time: 0.3   # DETECTED → CONFIRMED (daha hızlı)
+  intercept_timeout: 120.0      # INTERCEPT max süresi (çok uzun)
+  reacquire_timeout: 30.0       # REACQUIRE max süresi (uzatıldı)
+  track_loss_grace: 1.2         # stale takip yerine hizli tekrar yakalama
+  
+  # Bölge
+  patrol_center_lat: -35.3632622
+  patrol_center_lon: 149.1652376
+
+# --- Araç Bağlantıları ---
+vehicle:
+  prey_connection: "udp:127.0.0.1:14550"
+  hunter_connection: "udp:127.0.0.1:14560"
+  connection_timeout: 60
+  arm_timeout: 60
+
+# --- Genel ---
+general:
+  log_path: "system_log.txt"
+  log_level: "DEBUG"
+  display: true
+  capture_dir: "image"
+  detection_capture_interval: 2.0
+  countdown_capture_interval: 0.2
+  loop_sleep: 0.01
+  land_on_exit: true
+  state_log_period: 2.0
