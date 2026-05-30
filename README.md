@@ -34,12 +34,16 @@ Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Land
   <video src="https://github.com/user-attachments/assets/05d4527f-3d3c-40fb-8e78-58eaf5a41bcb" controls width="800"></video>
 </p>
 
+<br>
+
 <p align="center">
   📂 <b>Savaşan İHA Uçuş Kayıtları (Yerel Bağlantılar):</b><br>
   🎥 <a href="Savaşan_İHA_Görevi/assets/savaşan_iha.mp4">Özet/Kesilmiş Video</a> | 
   🎬 <a href="Savaşan_İHA_Görevi/assets/savaşan_iha_tam.mp4">Tam/Kesilmemiş Orijinal Video</a> | 
   ⚡ <a href="Savaşan_İHA_Görevi/assets/savaşan_iha_hızlı.mp4">Hızlandırılmış Test Videosu</a>
 </p>
+
+---
 
 <br>
 
@@ -103,9 +107,67 @@ graph TD
 
 ---
 
+### 📐 Tespit, Takip ve Kililtenme Algoritmaları ve Kontrol Mimarisi
+
+Sistem; nesne tespiti, durum kestirimi ve uçuş mekaniği kontrolünü birbirine bağlayan çok katmanlı bir mimariye sahiptir:
+
+#### 1. YOLOv11 ile Gerçek Zamanlı Hedef Algılama
+
+* **Derin Öğrenme Modeli:** Görüntü işleme adımında yüksek kare hızlarında (20+ FPS) av tespiti gerçekleştirmek için **YOLOv11** kullanılmıştır.
+* > [!WARNING]
+  > **Önemli Not:** Projede paylaşılan YOLO ağırlık dosyası Gazebo simülasyonu için eğitilmiş hafif bir **prototiptir**. Gerçek dünya uçuşlarında daha yüksek doğruluk ve menzil için **YOLOv11s** veya **YOLOv11m** modellerinin özgün veri kümeleriyle eğitilmesi tavsiye edilir.
+
+#### 2. Extended Kalman Filter (EKF) Tracker
+
+Görüntüdeki anlık kayıpları sönümlemek ve gürültülü YOLO çıktılarını filtrelemek amacıyla **Genişletilmiş Kalman Filtresi (EKF)** tabanlı tracker geliştirilmiştir.
+
+* **Durum Vektörü:** Durum uzayı 6 boyuttan oluşur:
+
+$$\mathbf{x} = \begin{bmatrix} x & y & u & v & w & h \end{bmatrix}^T$$
+
+Burada $(x, y)$ hedef merkezini, $(u, v)$ piksel hızını, $(w, h)$ ise hedef kutu boyutunu temsil eder.
+
+* **Dinamik Geçiş & Mahalanobis Gating:** Tahminler sabit hızlı dinamik modele dayanır:
+
+$$\mathbf{x}\_{k} = F \mathbf{x}\_{k-1} + \mathbf{w}\_k$$
+
+Hatalı tespitleri (gürültüleri) engellemek amacıyla **200 piksellik Mahalanobis Mesafe Eşiği (Gating)** uygulanır.
+
+* **Tahminî Takip (Coasting):** Hedef anlık olarak kadrajdan çıktığında EKF kendi hız tahminiyle saniyede 25 kez güncellenerek takibin ve kilitlenme sayacının sıfırlanmasını önler.
+
+#### 3. Görsel Servo (Visual Servoing) ve PID Kontrolü
+
+Kamera üzerindeki piksel sapmalarını hava aracının fiziksel yönelim ve tırmanma hız komutlarına dönüştürür:
+
+* **Açısal Projeksiyon:** Merkez piksel hataları ($e\_x, e\_y$), kamera FOV açıları ($FOV\_h = 110^{\circ}, FOV\_v = 75^{\circ}$) kullanılarak açı hatalarına ($\theta\_{\text{yaw}}, \theta\_{\text{pitch}}$) projekte edilir:
+
+$$\theta\_{\text{yaw}} = \frac{c\_x - c\_{x,\text{mid}}}{c\_{x,\text{mid}}} \times \frac{FOV\_h}{2}$$
+
+$$\theta\_{\text{pitch}} = \frac{c\_y - c\_{y,\text{mid}}}{c\_{y,\text{mid}}} \times \frac{FOV\_v}{2}$$
+
+* **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($$\large w_r = \frac{w}{\text{frame width}}$$) ile yaklaşık geometrik mesafe ($d\_{est}$) kestirilir ve trigonometrik olarak irtifa farkı ($h\_{err}$) hesaplanır:
+
+$$h\_{err} = d\_{est} \times \sin(\theta\_{\text{pitch}})$$
+
+* **Çift PID Döngüsü:**
+  * **Yatay Kontrol (`yaw`):** Açısal hata PID döngüsüne sokularak ArduPilot için pürüzsüz `yaw_rate` komutları üretilir.
+  * **Dikey Kontrol (`vz`):** İrtifa hatası $h\_{err}$ dikey PID ile dikey hız (`vz` - m/s) komutuna dönüştürülür.
+
+#### 4. Logaritmik Mesafe Kontrolü ve Hız Sınırlandırıcılar
+
+Aşırı yaklaşmayı ve avı geçip gitmeyi (fly-past) önlemek amacıyla logaritmik hız profilleyici çalışır:
+
+* **Logaritmik Hata:** Mesafe hatası, istenen ve mevcut genişlik oranlarının logaritmik farkından hesaplanır:
+
+$$e\_{dist} = \ln\left(\frac{w\_{desired}}{w\_{current}}\right)$$
+
+* **Hız Profilleyici & Slew Limiting:** Mesafe azaldıkça hız güvenli limitlere (6.0 - 8.0 m/s) çekilir. Aerodinamik aşırı yükleri engellemek için ani hız ve dönüş değişimleri sınırlandırılır (`max_speed_delta`, `max_yaw_delta`).
+
+---
+
 <br>
 
-## 🎯 Kamikaze İHA Görevi ve Şartname Gereksinimleri
+## 🎯 Kamikaze İHA Görevi: Otonom Yönelim ve Kamikaze Dalışı
 
 <h3 align="center">🎥 Görev Önizleme Demosu</h3>
 
@@ -113,11 +175,15 @@ graph TD
   <video src="https://github.com/user-attachments/assets/0b897603-f90d-4f7a-a46d-a202249760b8" controls width="800"></video>
 </p>
 
+<br>
+
 <p align="center">
   📂 <b>Kamikaze Uçuş Kayıtları (Yerel Bağlantılar):</b><br>
   🎬 <a href="Kamikaze_İHA_Görevi/assets/kamikaze.mp4">Normal Hızlı / Yavaş Video</a> | 
   ⚡ <a href="Kamikaze_İHA_Görevi/assets/kamikaze_hızlı.mp4">Hızlandırılmış Test Videosu</a>
 </p>
+
+---
 
 <br>
 
@@ -155,10 +221,39 @@ graph TD
 3. **CRUISE\_FORWARD (Seyir):** Operatör OpenCV arayüzünden dalış komutu verene (veya "K" tuşuna basana) kadar İHA belirlenen irtifada düz seyirde bekler.
 4. **TURN\_TO\_TARGET (Yönelme):** Dalış tetiklendiğinde İHA hedef koordinata doğru U dönüşü yapar. Yönelim 1.5s boyunca kararlı kaldığında rota kilitlenir.
 5. **FW\_APPROACH (Sabit Kanat Yaklaşımı):** İHA dalış kapısına kadar `GUIDED` modda irtifasını korur. Kapıdan geçince `FBWA` uçuş moduna geçerek motor ve kanat kararlılığı sağlar.
-6. **FW\_DIVE (Dalış):** Burun aşağı 30° dalış gerçekleştirilir.
+6. **FW\_DIVE (Dalış):** Burun aşağı 18° dalış gerçekleştirilir.
    * **Glide Slope PI:** İdeal süzülüş hattından sapmaları önlemek amacıyla PI kontrolcü `pitch_pwm` değerini kontrol eder.
    * **Yanal Sabitleme:** Rüzgardan savrulmayı önlemek için roll hareketleri sınırlandırılır (`dive_roll_limit_pwm`).
 7. **PULLUP (Pas Geçme):** QR kod okunduğunda veya acil durum limitine (`dive_recovery_altitude_m` - 25m) girildiğinde dalış anında kesilir. Dikey motorlar çalıştırılarak hızlıca tırmanışa geçilir ve seyir durumuna güvenle geri dönülür.
+
+
+---
+
+## 📐 Otomatik Dalış Mesafesi Hesaplaması
+
+Projede kullanılan dalış başlangıç mesafesi hesabı, İHA'nın anlık yüksekliği ve süzülüş yeteneğine göre **dinamik** olarak yapılır. 
+
+Dalış başlangıç mesafesi aşağıdaki formülle hesaplanmaktadır:
+$\text{Dalış Mesafesi} = \text{target\_offset} + \frac{\text{Aktif İrtifa} - \text{recovery\_alt}}{\tan(\theta_{\text{dalış}})} + \text{trigger\_margin} + \text{trigger\_extra}$
+
+> [!IMPORTANT]
+> **Dalış Açısı Sınırlandırması (18 Derece):**
+> Gazebo simülasyonlarında yapılan standart VTOL modeli testlerinde, hava aracının aerodinamik yapısının kararlı bir şekilde en fazla **18 derecelik** bir süzülüş açısıyla dalış yapabildiği tespit edilmiştir. Bu sebeple konfigürasyondaki `effective_dive_angle_deg` parametresi **18.0** olarak ayarlanmıştır. Kendi İHA'nızın aerodinamik yapısına göre bu parametreyi (örn. 30 dereceye kadar) konfigürasyon dosyasından değiştirebilirsiniz. Sistem, girdiğiniz açıya ve anlık yüksekliğe göre en uygun dalış başlangıç mesafesini otomatik hesaplayacaktır.
+
+---
+
+## 📷 Dalış Sırasında QR Kod Okuma Algoritması
+
+Dalış esnasında İHA yüksek hızla alçalırken QR kodun hızlı ve kesintisiz okunması için optimize edilmiş bir görüntü işleme hattı çalışır:
+
+1.  **Görüntü Ön İşleme:** Gelen video karesi gri tonlamaya (Grayscale) dönüştürülür.
+2.  **Finder Pattern ROI Arama:** QR kodların köşelerinde bulunan üç adet kare şeklindeki "Finder Pattern" (bulucu desenler) kontur hiyerarşisi kullanılarak taranır. Bu sayede tüm resim yerine sadece QR kodun olabileceği olası bölgeler (ROI - Region of Interest) hızlıca tespit edilir.
+3.  **Lokal ve Keskinleştirilmiş Tarama:** Tespit edilen ROI bölgeleri kırpılarak çözünürlüğü artırılır. PyZBar kütüphanesinin okuma başarısını artırmak için bu kırpılmış bölgeye **görüntü keskinleştirme** (sharpening) ve **Otsu adaptif eşikleme** (Otsu binarization) uygulanarak PyZBar deşifre işlemine gönderilir.
+4.  **Genel Tarama (Fallback):** Eğer Finder Pattern bulunamazsa, görüntü 640px genişliğe küçültülerek genel bir PyZBar taraması yapılır.
+5.  **Görsel ve Veri Kaydı:**
+    *   QR kod tespit edildiğinde fakat henüz tam deşifre edilemediğinde, anlık kırpılmış resimler `/captures` klasörüne `qr_seen_*.jpg` adyıyla kaydedilir.
+    *   QR kod başarıyla okunduğunda ise yeşil poligon ile işaretlenmiş kare `qr_success_*.jpg` adıyla kaydedilerek raporlama için hazır hale getirilir.
+
 
 ---
 
