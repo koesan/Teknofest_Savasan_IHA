@@ -82,7 +82,7 @@ Uçuş kontrol mekanizması ve otonom takip görevleri bir durum makinesi (State
 graph TD
     BOOT[BAŞLANGIÇ] --> TAKEOFF[1. DİKEY KALKIŞ]
     TAKEOFF --> TRANSITION[2. SEYİR GEÇİŞİ]
-    TRANSITION --> SEARCH[3. DAİRESEL ARAMA]
+    TRANSITION --> SEARCH[3. HEDEF ARAMA]
     SEARCH -- "Hedef Tespit Edildi" --> INTERCEPT[4. HEDEFE YÖNELME]
     INTERCEPT -- "Tüm Kilitlenme Kriterleri OK" --> LOCK_HOLD[5. KİLİT BAŞLADI]
     LOCK_HOLD -- "4.0 Saniye Kesintisiz Tamamlandı" --> LOCK_SUCCESS[6. KİLİT BAŞARILI]
