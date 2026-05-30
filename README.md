@@ -105,62 +105,6 @@ graph TD
 
 <br>
 
-### 📐 Gelişmiş Algoritmik ve Kontrol Mimarisi
-
-Sistem; nesne tespiti, durum kestirimi ve uçuş mekaniği kontrolünü birbirine bağlayan çok katmanlı bir mimariye sahiptir:
-
-#### 1. YOLOv11 ile Gerçek Zamanlı Hedef Algılama
-* **Derin Öğrenme Modeli:** Görüntü işleme adımında yüksek kare hızlarında (20+ FPS) av tespiti gerçekleştirmek için **YOLOv11** kullanılmıştır.
-* > [!WARNING]
-  > **Önemli Not:** Projede paylaşılan YOLO ağırlık dosyası Gazebo simülasyonu için eğitilmiş hafif bir **prototiptir**. Gerçek dünya uçuşlarında daha yüksek doğruluk ve menzil için **YOLOv11s** veya **YOLOv11m** modellerinin özgün veri kümeleriyle eğitilmesi tavsiye edilir.
-
-#### 2. Extended Kalman Filter (EKF) Tracker
-Görüntüdeki anlık kayıpları sönümlemek ve gürültülü YOLO çıktılarını filtrelemek amacıyla **Genişletilmiş Kalman Filtresi (EKF)** tabanlı tracker geliştirilmiştir.
-
-* **Durum Vektörü:** Durum uzayı 6 boyuttan oluşur:
-
-$$\mathbf{x} = \begin{bmatrix} x & y & u & v & w & h \end{bmatrix}^T$$
-
-Burada $(x, y)$ hedef merkezini, $(u, v)$ piksel hızını, $(w, h)$ ise hedef kutu boyutunu temsil eder.
-
-* **Dinamik Geçiş & Mahalanobis Gating:** Tahminler sabit hızlı dinamik modele dayanır:
-
-$$\mathbf{x}\_{k} = F \mathbf{x}\_{k-1} + \mathbf{w}\_k$$
-
-Hatalı tespitleri (gürültüleri) engellemek amacıyla **200 piksellik Mahalanobis Mesafe Eşiği (Gating)** uygulanır.
-
-* **Tahminî Takip (Coasting):** Hedef anlık olarak kadrajdan çıktığında EKF kendi hız tahminiyle saniyede 25 kez güncellenerek takibin ve kilitlenme sayacının sıfırlanmasını önler.
-
-#### 3. Görsel Servo (Visual Servoing) ve PID Kontrolü
-Kamera üzerindeki piksel sapmalarını hava aracının fiziksel yönelim ve tırmanma hız komutlarına dönüştürür:
-
-* **Açısal Projeksiyon:** Merkez piksel hataları ($e\_x, e\_y$), kamera FOV açıları ($FOV\_h = 110^{\circ}, FOV\_v = 75^{\circ}$) kullanılarak açı hatalarına ($\theta\_{\text{yaw}}, \theta\_{\text{pitch}}$) projekte edilir:
-
-$$\theta\_{\text{yaw}} = \frac{c\_x - c\_{x,\text{mid}}}{c\_{x,\text{mid}}} \times \frac{FOV\_h}{2}$$
-
-$$\theta\_{\text{pitch}} = \frac{c\_y - c\_{y,\text{mid}}}{c\_{y,\text{mid}}} \times \frac{FOV\_v}{2}$$
-
-* **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($$\large w_r = \frac{w}{\text{frame width}}$$) ile yaklaşık geometrik mesafe ($d\_{est}$) kestirilir ve trigonometrik olarak irtifa farkı ($h\_{err}$) hesaplanır:
-
-$$h\_{err} = d\_{est} \times \sin(\theta\_{\text{pitch}})$$
-
-* **Çift PID Döngüsü:**
-  * **Yatay Kontrol (`yaw`):** Açısal hata PID döngüsüne sokularak ArduPilot için pürüzsüz `yaw_rate` komutları üretilir.
-  * **Dikey Kontrol (`vz`):** İrtifa hatası $h\_{err}$ dikey PID ile dikey hız (`vz` - m/s) komutuna dönüştürülür.
-
-#### 4. Logaritmik Mesafe Kontrolü ve Hız Sınırlandırıcılar
-Aşırı yaklaşmayı ve avı geçip gitmeyi (fly-past) önlemek amacıyla logaritmik hız profilleyici çalışır:
-
-* **Logaritmik Hata:** Mesafe hatası, istenen ve mevcut genişlik oranlarının logaritmik farkından hesaplanır:
-
-$$e\_{dist} = \ln\left(\frac{w\_{desired}}{w\_{current}}\right)$$
-
-* **Hız Profilleyici & Slew Limiting:** Mesafe azaldıkça hız güvenli limitlere (6.0 - 8.0 m/s) çekilir. Aerodinamik aşırı yükleri engellemek için ani hız ve dönüş değişimleri sınırlandırılır (`max_speed_delta`, `max_yaw_delta`).
-
----
-
-<br>
-
 ## 🎯 Kamikaze İHA Görevi ve Şartname Gereksinimleri
 
 <h3 align="center">🎥 Görev Önizleme Demosu</h3>
