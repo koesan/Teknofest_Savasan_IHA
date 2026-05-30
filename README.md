@@ -174,8 +174,8 @@ Docker tabanlı simülasyon ortamı için kurulum adımları **[ArduGazeboSim-Do
 
 ```bash
 # Sistem kütüphanelerini güncelleyin ve libzbar paketlerini yükleyin
-sudo apt-get update
-sudo apt-get install -y libzbar0 libzbar-dev
+apt-get update
+apt-get install -y libzbar0 libzbar-dev
 
 # Gerekli Python kütüphanelerini yükleyin
 pip install -r requirements.txt
