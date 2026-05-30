@@ -129,19 +129,22 @@ Görüntü düzleminde anlık tespit kayıplarını sönümlemek ve gürültül�
 *   **Tahminî Takip (Coasting):** Kamera kadrajından hedefin anlık olarak çıktığı veya YOLO'nun tespiti kaçırdığı frame'lerde EKF kendi hız tahmini (`u, v`) ile hedef konumunu saniyede 25 kez güncellemeye devam eder (`COASTING` durumu). Böylece takip kesintiye uğramaz ve kilitlenme sayacı sıfırlanmaz.
 
 #### 3. Görsel Servo (Visual Servoing) ve PID Kontrol Mimarisi
-Görüntü düzlemindeki piksel sapmalarını hava aracının fiziksel yönelim ve irtifa komutlarına çeviren bir görsel servo algoritması çalışır:
-*   **Açısal Projeksiyon:** Merkez piksel hataları ($e\_x, e\_y$), kameranın yatay ($FOV\_h = 110^{\circ}$) ve dikey ($FOV\_v = 75^{\circ}$) görüş açıları kullanılarak gerçek derece cinsinden açı hatalarına ($\theta\_{\text{yaw}}, \theta\_{\text{pitch}}$) projekte edilir:
-*   
-    $$
-\theta_{\text{yaw}} = \frac{c_x - c_{x,\text{mid}}}{c_{x,\text{mid}}} \times \frac{\text{FOV}_h}{2}
-$$
-    
-*   **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($w\_r = w / \text{frame\_width}$) kullanılarak av aracına olan yaklaşık geometrik mesafe ($d\_{est}$) hesaplanır. Ardından dikey pitch açı hatasıyla trigonometrik olarak irtifa farkı ($h\_{err}$) elde edilir:
-    $$h\_{err} = d\_{est} \times \sin(\theta\_{\text{pitch}})$$
-*   **Çift PID Döngüsü:** 
-    *   **Yatay Kontrol:** Yatay açı hatası, agresif bir PID kontrolcüsüne (`yaw_kp: 5.5`, `yaw_kd: 6.0`) beslenerek saniyede en fazla 65 dereceye kadar yatay açısal dönüş komutu (`yaw_rate`) üretir.
-    *   **Dikey Kontrol:** Hesaplanan irtifa farkı ($h\_{err}$), dikey PID döngüsüne (`alt_kp: 4.0`, `alt_kd: 2.0`) sokularak dikey tırmanış/alçalış hızını (`vz` - m/s) üretir.
 
+Görüntü düzlemindeki piksel sapmalarını hava aracının fiziksel yönelim ve irtifa komutlarına çeviren bir görsel servo algoritması çalışır:
+
+* **Açısal Projeksiyon:** Merkez piksel hataları ($e_x, e_y$), kameranın yatay ($FOV_h = 110^{\circ}$) ve dikey ($FOV_v = 75^{\circ}$) görüş açıları kullanılarak gerçek derece cinsinden açı hatalarına ($\theta_{\text{yaw}}, \theta_{\text{pitch}}$) projekte edilir:
+    
+    $$\theta_{\text{yaw}} = \frac{c_x - c_{x,\text{mid}}}{c_{x,\text{mid}}} \times \frac{FOV_h}{2}$$
+
+    $$\theta_{\text{pitch}} = \frac{c_y - c_{y,\text{mid}}}{c_{y,\text{mid}}} \times \frac{FOV_v}{2}$$
+
+* **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($w_r = w / \text{frame\_width}$) kullanılarak av aracına olan yaklaşık geometrik mesafe ($d_{\text{est}}$) hesaplanır. Ardından dikey pitch açı hatasıyla trigonometrik olarak irtifa farkı ($h_{\text{err}}$) elde edilir:
+
+    $$h_{\text{err}} = d_{\text{est}} \times \sin(\theta_{\text{pitch}})$$
+
+* **Çift PID Döngüsü:** * **Yatay Kontrol:** Yatay açı hatası, agresif bir PID kontrolcüsüne (`yaw_kp: 5.5`, `yaw_kd: 6.0`) beslenerek saniyede en fazla $65^{\circ}$'ye kadar yatay açısal dönüş komutu (`yaw_rate`) üretir.
+    * **Dikey Kontrol:** Hesaplanan irtifa farkı ($h_{\text{err}}$), dikey PID döngüsüne (`alt_kp: 4.0`, `alt_kd: 2.0`) sokularak dikey tırmanış/alçalış hızını (`vz` - m/s) üretir.
+      
 #### 4. Logaritmik Mesafe Kontrolü ve Hız Profilleme
 Avcı İHA'nın avı arkadan takip ederken aşırı hızlanıp onu geçmesini (fly-past) önlemek amacıyla logaritmik mesafe kontrolü uygulanır:
 *   **Logaritmik Hata Kontrolü:** Mesafe hatası, hedef ve anlık genişlik oranlarının logaritmik farkı üzerinden hesaplanır:
