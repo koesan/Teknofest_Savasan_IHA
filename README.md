@@ -115,8 +115,8 @@ graph TD
 
 <p align="center">
   📂 <b>Kamikaze Uçuş Kayıtları (Yerel Bağlantılar):</b><br>
-  🎬 <a href="./assets/kamikaze.mp4">Normal Hızlı / Yavaş Video</a> | 
-  ⚡ <a href="./assets/kamikaze_hızlı.mp4">Hızlandırılmış Test Videosu</a>
+  🎬 <a href="Kamikaze_İHA_Görevi/assets/kamikaze.mp4">Normal Hızlı / Yavaş Video</a> | 
+  ⚡ <a href="Kamikaze_İHA_Görevi/assets/kamikaze_hızlı.mp4">Hızlandırılmış Test Videosu</a>
 </p>
 
 <br>
