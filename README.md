@@ -138,7 +138,7 @@ $$\theta\_{\text{yaw}} = \frac{c\_x - c\_{x,\text{mid}}}{c\_{x,\text{mid}}} \tim
 
 $$\theta\_{\text{pitch}} = \frac{c\_y - c\_{y,\text{mid}}}{c\_{y,\text{mid}}} \times \frac{FOV\_v}{2}$$
 
-* **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($$w\_r = \frac{w}{\text{frame\_width}}$$) ile yaklaşık geometrik mesafe ($d\_{est}$) kestirilir ve trigonometrik olarak irtifa farkı ($h\_{err}$) hesaplanır:
+* **Sanal İrtifa Kestirimi:** Bbox genişlik oranı ($$\large w_r = \frac{w}{\text{frame width}}$$) ile yaklaşık geometrik mesafe ($d\_{est}$) kestirilir ve trigonometrik olarak irtifa farkı ($h\_{err}$) hesaplanır:
 
 $$h\_{err} = d\_{est} \times \sin(\theta\_{\text{pitch}})$$
 
