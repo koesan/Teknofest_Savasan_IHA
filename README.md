@@ -234,7 +234,8 @@ graph TD
 Projede kullanılan dalış başlangıç mesafesi hesabı, İHA'nın anlık yüksekliği ve süzülüş yeteneğine göre **dinamik** olarak yapılır. 
 
 Dalış başlangıç mesafesi aşağıdaki formülle hesaplanmaktadır:
-$\text{Dalış Mesafesi} = \text{target\_offset} + \frac{\text{Aktif İrtifa} - \text{recovery\_alt}}{\tan(\theta_{\text{dalış}})} + \text{trigger\_margin} + \text{trigger\_extra}$
+
+$$\text{Dalış Mesafesi} = \text{target\_offset} + \frac{\text{Aktif İrtifa} - \text{recovery\_alt}}{\tan(\theta_{\text{dalış}})} + \text{trigger\_margin} + \text{trigger\_extra}$$
 
 > [!IMPORTANT]
 > **Dalış Açısı Sınırlandırması (18 Derece):**
