@@ -1,14 +1,17 @@
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/YOLO-v11-FF2F2F?style=for-the-badge&logo=yolo&logoColor=white" />
+  <img src="https://img.shields.io/badge/ROS-Noetic-22314E?style=for-the-badge&logo=ros&logoColor=white" />
+  <img src="https://img.shields.io/badge/Gazebo-Simülasyon-5A0FC8?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/ArduPilot-SITL-FF6F00?style=for-the-badge" />
+</p>
 
+<h1 align="center">⚔️ TEKNOFEST Savaşan İHA ve Otonom Kamikaze Görevleri</h1>
 
-<h1 align="center">TEKNOFEST Savaşan İHA ve Otonom Kamikaze Görevleri</h1>
+<h3 align="center">Uçtan Uca, AI Tabanlı Otonom Takip, Kilitlenme ve Hassas Kamikaze Dalış Sistemi</h3>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.8-3776AB?logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/ROS-Noetic-22314E?logo=ros&logoColor=white" />
-  <img src="https://img.shields.io/badge/Gazebo-Simülasyon-5A0FC8" />
-  <img src="https://img.shields.io/badge/ArduPilot-SITL-FF6F00" />
-  <img src="https://img.shields.io/badge/Docker-Konteyner-2496ED?logo=docker&logoColor=white" />
-  <img src="https://img.shields.io/badge/YOLO-v11-111F68" />
+  <b>Arama</b> → <b>YOLOv11 Algılama</b> → <b>EKF Durum Kestirimi</b> → <b>Visual Servoing</b> → <b>4s Kararlı Kilitlenme / Kamikaze Dalışı</b>
 </p>
 
 ---
@@ -20,6 +23,9 @@
 Bu proje, **TEKNOFEST Savaşan İHA Yarışması** için geliştirilmiş otonom takip/kilitlenme görevi ve otonom kamikaze görevi yazılım altyapılarını içermektedir.
 
 Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Landing - QuadPlane)** tipi İHA modeli (`standard_vtol`) kullanılmıştır. Ancak projenin ana kodları tamamen modüler ve esnek bir yapıda geliştirilmiş olup, **farklı tipteki İHA'lar** (sabit kanat, döner kanat vb.) ile çalışabilecek mimariye sahiptir. Kendi kullanacağınız İHA modeline uygun olarak `config.yaml` ve `default.yaml` dosyalarındaki parametreleri düzenleyip, gerekirse araç kontrol kodlarını da kendi aracınızın fiziksel uçuş dinamiklerine göre güncelleyerek sistemi kendi platformunuzda kullanabilirsiniz.
+
+> [!NOTE]
+> **📂 Medya Dosyaları Hakkında:** Görevler esnasında kaydedilmiş yüksek çözünürlüklü tüm orijinal görsel ve video kayıtları, proje klasörleri içerisindeki `assets` klasörü altında (`./assets/`) yer almaktadır; detaylı inceleme için bu dosyaları doğrudan oynatabilirsiniz.
 
 ---
 
@@ -33,6 +39,13 @@ Sistem testleri için dikey iniş kalkışlı **VTOL (Vertical Take-Off and Land
   <video src="https://github.com/user-attachments/assets/05d4527f-3d3c-40fb-8e78-58eaf5a41bcb" controls width="800"></video>
 </p>
 
+<p align="center">
+  📂 <b>Savaşan İHA Uçuş Kayıtları (Yerel Bağlantılar):</b><br>
+  🎥 <a href="./assets/savaşan_iha.mp4">Özet/Kesilmiş Video</a> | 
+  🎬 <a href="./assets/savaşan_iha_tam.mp4">Tam/Kesilmemiş Orijinal Video</a> | 
+  ⚡ <a href="./assets/savaşan_iha_hızlı.mp4">Hızlandırılmış Test Videosu</a>
+</p>
+
 Savaşan İHA görevi; avcı İHA'nın havada serbestçe devriye gezen av İHA'yı (prey) tamamen otonom olarak arayıp bulmasını, ona güvenli mesafeden yaklaşarak arkasına yerleşmesini (mesafe koruması) ve yarışma şartnamesinde belirtilen 5 kritik kuralı kesintisiz 4.0 saniye boyunca sağlayarak otonom kilitlenme gerçekleştirmesini kapsar.
 
 ### 📋 Şartname Kuralları & Kilitlenme Kriterleri
@@ -41,7 +54,10 @@ Yarışma kurallarına göre başarılı bir otonom kilitlenme için aşağıdak
 > [!IMPORTANT]
 > **1. Boyut Şartı (min\_target\_size\_ratio: %5)**
 > Hedef İHA'nın genişliğinin veya yüksekliğinin, kamera ekranı (1280x720) boyutlarına oranı **en az %5 (`0.05`)** olmalıdır.
-> *   *Profil Telafisi:* İHA'lar aynı irtifada uçarken yandan veya karşıdan çok ince (dar) bir kesit alanına sahiptir. Bu dar kesit alanını telafi etmek ve uçuş güvenliğini (aşırı yaklaşma riskini) korumak için `bbox_scale_factor: 0.80` parametresi eklenmiştir. Bu parametre, algılanan bbox boyutunu sanal olarak %80 oranında büyüterek kilitlenmenin daha güvenli bir mesafeden kurulmasını ve sürdürülmesini sağlar.
+> *   *Profil Telafisi ve Uçuş Güvenliği (`bbox_scale_factor: 0.80`):* 
+>     Mevcut simülasyon ortamında (prototip test altyapısında), avcı ve av İHA'lar aynı irtifada uçmaktadır. Bu durum, avcı İHA'nın av İHA'yı doğrudan arkasından/karşısından (aynı düzlemde - coplanar) takip etmesine neden olur. Bu dar yanal/arkadan kesit açısı nedeniyle hedef İHA'nın kamera ekranındaki piksel genişliği yapay olarak son derece küçük çıkmaktadır. Bbox büyütme parametresi eklenmediğinde, %5 boyut sınırının ham YOLO kutusu tarafından sağlanabilmesi için avcı İHA'nın av İHA'ya **2-3 metre kadar tehlikeli bir mesafeye** yaklaşması gerekmiştir. Bu aşırı yakınlık ciddi bir çarpışma riski doğurmaktadır. Bu nedenle, uçuş güvenliğini korumak ve güvenli bir kilitlenme mesafesi oluşturmak amacıyla `bbox_scale_factor: 0.80` (%80 sanal büyütme) parametresi entegre edilmiştir.
+> *   *Yanal Kesit vs. Üstten Bakış Farkı:* 
+>     Gerçek yarışma alanında ve nihai operasyonel sistemde, avcı İHA'nın av İHA'ya **üst irtifalardan** (daha yüksek bir süzülüş/görüş hattıyla) yaklaşması planlanmaktadır. Bu sayede av İHA'nın geniş kanat ve gövde yüzeyi (üstten bakış profili) tam olarak kameranın görüş açısına gireceğinden, profil daralması problemi kendiliğinden ortadan kalkacak ve ham YOLO kutuları dahi boyut şartını güvenli mesafelerde kolayca sağlayabilecektir. Dolayısıyla bu yapay kilitlenme genişletme faktörü (`bbox_scale_factor`), tamamen coplanar (aynı yatay düzlemdeki) prototip uçuş testlerinde çarpışma risklerini sıfıra indirmek ve görevi kararlı bir şekilde doğrulamak için eklenmiştir.
 
 > [!NOTE]
 > **2. Konum Şartı (Hedef Vuruş Alanı - `in\_target\_area`)**
@@ -144,6 +160,12 @@ Avcı İHA'nın avı arkadan takip ederken aşırı hızlanıp onu geçmesini (f
 
 <p align="center">
   <video src="https://github.com/user-attachments/assets/0b897603-f90d-4f7a-a46d-a202249760b8" controls width="800"></video>
+</p>
+
+<p align="center">
+  📂 <b>Kamikaze Uçuş Kayıtları (Yerel Bağlantılar):</b><br>
+  🎬 <a href="./assets/kamikaze.mp4">Normal Hızlı / Yavaş Video</a> | 
+  ⚡ <a href="./assets/kamikaze_hızlı.mp4">Hızlandırılmış Test Videosu</a>
 </p>
 
 Yarışma şartnamesine göre Kamikaze İHA görevi; yer düzleminde sabit bir konumda bulunan **2m x 2m** boyutlarındaki bir QR kod hedefinin İHA üzerindeki kamera ile otonom olarak tespit edilmesini, okunmasını ve ardından İHA'nın güvenli bir şekilde pas geçerek (tırmanışa geçerek) uçuşuna devam etmesini kapsar.
