@@ -235,7 +235,7 @@ Projede kullanılan dalış başlangıç mesafesi hesabı, İHA'nın anlık yük
 
 Dalış başlangıç mesafesi aşağıdaki formülle hesaplanmaktadır:
 
-$$\text{Dalış Mesafesi} = \text{target\_offset} + \frac{\text{Aktif İrtifa} - \text{recovery\_alt}}{\tan(\theta_{\text{dalış}})} + \text{trigger\_margin} + \text{trigger\_extra}$$
+$$\text{Dalış Mesafesi} = target_{offset} + \frac{\text{Aktif İrtifa} - recovery_{alt}}{\tan(\theta_{\text{dalış}})} + trigger_{margin} + trigger_{extra}$$
 
 > [!IMPORTANT]
 > **Dalış Açısı Sınırlandırması (18 Derece):**
