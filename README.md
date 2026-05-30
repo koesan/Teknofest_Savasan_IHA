@@ -1,17 +1,12 @@
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.8%2B-3776AB?style=for-the-badge&logo=python&logoColor=white" />
-  <img src="https://img.shields.io/badge/YOLO-v11-FF2F2F?style=for-the-badge&logo=yolo&logoColor=white" />
-  <img src="https://img.shields.io/badge/ROS-Noetic-22314E?style=for-the-badge&logo=ros&logoColor=white" />
-  <img src="https://img.shields.io/badge/Gazebo-Simülasyon-5A0FC8?style=for-the-badge" />
-  <img src="https://img.shields.io/badge/ArduPilot-SITL-FF6F00?style=for-the-badge" />
-</p>
-
-<h1 align="center">⚔️ TEKNOFEST Savaşan İHA ve Otonom Kamikaze Görevleri</h1>
-
-<h3 align="center">Uçtan Uca, AI Tabanlı Otonom Takip, Kilitlenme ve Hassas Kamikaze Dalış Sistemi</h3>
+<h1 align="center">TEKNOFEST Savaşan İHA ve Otonom Kamikaze Görevleri</h1>
 
 <p align="center">
-  <b>Arama</b> → <b>YOLOv11 Algılama</b> → <b>EKF Durum Kestirimi</b> → <b>Visual Servoing</b> → <b>4s Kararlı Kilitlenme / Kamikaze Dalışı</b>
+  <img src="https://img.shields.io/badge/Python-3.8-3776AB?logo=python&logoColor=white" />
+  <img src="https://img.shields.io/badge/ROS-Noetic-22314E?logo=ros&logoColor=white" />
+  <img src="https://img.shields.io/badge/Gazebo-Simülasyon-5A0FC8" />
+  <img src="https://img.shields.io/badge/ArduPilot-SITL-FF6F00" />
+  <img src="https://img.shields.io/badge/Docker-Konteyner-2496ED?logo=docker&logoColor=white" />
+  <img src="https://img.shields.io/badge/YOLO-v11-111F68" />
 </p>
 
 ---
