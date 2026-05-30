@@ -115,7 +115,7 @@ Sistem; nesne tespiti, durum kestirimi ve uçuş mekaniği kontrolünü birbirin
 
 * **Derin Öğrenme Modeli:** Görüntü işleme adımında yüksek kare hızlarında (20+ FPS) av tespiti gerçekleştirmek için **YOLOv11** kullanılmıştır.
 * > [!WARNING]
-  > **Önemli Not:** Projede paylaşılan YOLO ağırlık dosyası Gazebo simülasyonu için eğitilmiş hafif bir **prototiptir**. Gerçek dünya uçuşlarında daha yüksek doğruluk ve menzil için **YOLOv11s** veya **YOLOv11m** modellerinin özgün veri kümeleriyle eğitilmesi tavsiye edilir.
+  > **Önemli Not:** Bu projede kullanılan YOLO modeli test amaçlı eğitilmiş bir **prototiptir**. Daha başarılı sonuçlar elde etmek için kendi modelinizi eğitmeniz veya daha gelişmiş bir model kullanmanız önerilir.
 
 #### 2. Extended Kalman Filter (EKF) Tracker
 
